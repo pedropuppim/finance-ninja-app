@@ -4,7 +4,7 @@ import swal from 'sweetalert';
 
 
 import api from "./../../services/api";
-import { login } from "./../../services/auth";
+import { login, logout } from "./../../services/auth";
 
 
 
@@ -24,25 +24,29 @@ export default class Login extends Component {
         this.auth();
     }
 
-    auth = async () =>{
+     auth = async () =>{
 
         var self = this;
-        await api.post('/auth', {
-            email: this.state.email,
-            password: this.state.password
-        })
-        .then(function (response) {
+
+        logout();
+
+        try {
+
+            const response = await api.post('/auth', {
+                email: this.state.email,
+                password: this.state.password
+            });
+
             login(response.data);
             self.props.history.push("/invoices");
-        })    
-		.catch(function () {
-            
+
+        } catch (error) {
             swal({
                 title: "We were unable to authenticate.",
                 text: "The data entered was not found in the database.",
                 dangerMode: true
-                });
-        });
+            });
+        }
 
     }
 

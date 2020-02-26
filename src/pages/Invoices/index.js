@@ -12,7 +12,8 @@ export default class Invoices extends Component {
     state = {
         invoices: [],
         pagination: [],
-        loading: true
+        loading: true,
+        loading_table: false
     }
 
     componentDidMount() {
@@ -24,7 +25,7 @@ export default class Invoices extends Component {
         var currentPage = this.state.pagination.currentPage || 1;
 
         const response = await api.get("/invoices?page=" + currentPage)
-        this.setState({ invoices: response.data.data, pagination: response.data.pagination, loading: false })
+        this.setState({ invoices: response.data.data, pagination: response.data.pagination, loading: false, loading_table: false })
 
     }
 
@@ -34,7 +35,7 @@ export default class Invoices extends Component {
 
         if (ptype === "previous") {
             if (pagination.currentPage > 1) {
-                this.setState({ loading: true });
+                this.setState({ loading_table: true });
                 pagination.currentPage = parseInt(pagination.currentPage) - 1;
             } else {
                 return;
@@ -43,7 +44,7 @@ export default class Invoices extends Component {
 
         if (ptype === "next") {
             if (pagination.currentPage < pagination.lastPage) {
-                this.setState({ loading: true });
+                this.setState({ loading_table: true });
                 pagination.currentPage = parseInt(pagination.currentPage) + 1;
             } else {
                 return;
@@ -61,6 +62,12 @@ export default class Invoices extends Component {
         const page = parseInt(this.state.pagination.currentPage) || 1;
         const lastPage = parseInt(this.state.pagination.lastPage);
 
+        let spinner_table="";
+
+        if (this.state.loading_table) {
+            spinner_table = <Spinner animation="border"  variant="light" className='spinner_table' />
+        }
+
         return (
 
             <div>
@@ -68,6 +75,8 @@ export default class Invoices extends Component {
 
 
                 <div className="container_bill">
+
+                    {spinner_table}
 
                     {this.state.loading ? (
                         <Spinner animation="grow" className='spinner' />

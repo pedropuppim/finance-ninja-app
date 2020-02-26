@@ -11,4 +11,10 @@
     margin-left: 50%;
 }
 
+.spinner_table {
+    margin-left: 30%;
+    position: absolute;
+    z-index: 9999;
+    margin-top: 15%;
+}
 

@@ -4,7 +4,7 @@ import swal from 'sweetalert';
 
 
 const api = axios.create({
-    baseURL: "http://localhost:5000"
+    baseURL: "https://finance-ninja-api.herokuapp.com"
 })
 
 api.interceptors.request.use(async config => {

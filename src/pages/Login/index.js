@@ -1,5 +1,5 @@
-import React, {Component} from 'react';
-import { Button, Form } from 'react-bootstrap'; 
+import React, { Component } from 'react';
+import { Button, Form, Spinner } from 'react-bootstrap';
 import swal from 'sweetalert';
 
 
@@ -8,15 +8,16 @@ import { login, logout } from "./../../services/auth";
 
 
 
-import './styles.css'; 
+import './styles.css';
 import logo from './../../components/Header/logo-finance-ninja.png';
 
 export default class Login extends Component {
-    
+
     state = {
         email: "",
         password: "",
-        error: ""
+        error: "",
+        loading: false
     };
 
     handleSubmit = (e) => {
@@ -24,14 +25,14 @@ export default class Login extends Component {
         this.auth();
     }
 
-     auth = async () =>{
+    auth = async () => {
 
         var self = this;
 
         logout();
 
         try {
-
+            this.setState({ loading: true });
             const response = await api.post('/auth', {
                 email: this.state.email,
                 password: this.state.password
@@ -46,6 +47,8 @@ export default class Login extends Component {
                 text: "The data entered was not found in the database.",
                 dangerMode: true
             });
+
+            this.setState({ loading: false });
         }
 
     }
@@ -53,35 +56,46 @@ export default class Login extends Component {
     render() {
         return (
 
-        <div>
-            
-            <header className="main-header">
-                    <div className="container" style={{justifyContent: 'center'}}>
+            <div>
+
+                <header className="main-header">
+                    <div className="container" style={{ justifyContent: 'center' }}>
                         <h1 className="mh-logo">
-                            <img src={logo} className="logo-img"  alt="Finance Ninja" />
+                            <img src={logo} className="logo-img" alt="Finance Ninja" />
                         </h1>
 
                     </div>
                 </header>
-            <div className="container_login">
-                <Form onSubmit={this.handleSubmit}>
-                    <Form.Group controlId="formBasicEmail">
-                        <Form.Label>Email address</Form.Label>
-                        <Form.Control type="email" placeholder="Enter email" required onChange={e => this.setState({ email: e.target.value })} />
 
-                    </Form.Group>
+                {this.state.loading ? (
+                    <Spinner animation="grow" className='spinner' />
+                ) : (
 
-                    <Form.Group controlId="formBasicPassword">
-                        <Form.Label>Password</Form.Label>
-                        <Form.Control type="password" placeholder="Password" required onChange={e => this.setState({ password: e.target.value })} />
-                    </Form.Group>
+                        <div>
+                            <div className="container_login">
+                                <Form onSubmit={this.handleSubmit}>
+                                    <Form.Group controlId="formBasicEmail">
+                                        <Form.Label>Email address</Form.Label>
+                                        <Form.Control type="email" placeholder="Enter email" required onChange={e => this.setState({ email: e.target.value })} />
 
-                    <Button variant="secondary" type="submit">
-                        Login
+                                    </Form.Group>
+
+                                    <Form.Group controlId="formBasicPassword">
+                                        <Form.Label>Password</Form.Label>
+                                        <Form.Control type="password" placeholder="Password" required onChange={e => this.setState({ password: e.target.value })} />
+                                    </Form.Group>
+
+                                    <Button variant="secondary" type="submit">
+                                        Login
                     </Button>
-                    </Form>
+                                </Form>
+                            </div>
+                        </div>
+                    )
+
+                }
+
             </div>
-        </div>
 
         );
     }

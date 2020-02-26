@@ -15,7 +15,7 @@ api.interceptors.request.use(async config => {
 
         swal({
           title: "Session Expired",
-          text: "You to be redirected to the login page!",
+          text: "You will be redirected to the login page!",
           icon: "warning",
           dangerMode: true,
         })

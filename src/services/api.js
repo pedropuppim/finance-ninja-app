@@ -3,13 +3,13 @@ import { getToken, getExpire, logout } from "./auth";
 import swal from 'sweetalert';
 
 
-// const api = axios.create({
-//     baseURL: "https://finance-ninja-api.herokuapp.com"
-// })
-
 const api = axios.create({
-  baseURL: "http://localhost:5000"
+    baseURL: "https://finance-ninja-api.herokuapp.com"
 })
+
+// const api = axios.create({
+//   baseURL: "http://localhost:5000"
+// })
 
 
 api.interceptors.request.use(async config => {

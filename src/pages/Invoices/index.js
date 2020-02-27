@@ -4,13 +4,15 @@ import Header from "../../components/Header";
 import './styles.css';
 import { Table, Badge, Spinner, Button } from 'react-bootstrap';
 
-const moment = require("moment");
+import AddInvoice from "./add";
 
+const moment = require("moment");
 
 export default class Invoices extends Component {
 
     state = {
         invoices: [],
+        accounts: [],
         pagination: [],
         loading: true,
         loading_table: false
@@ -18,14 +20,20 @@ export default class Invoices extends Component {
 
     componentDidMount() {
         this.loadInvoices();
+        this.loadAccounts();
     }
 
     loadInvoices = async () => {
-
         var currentPage = this.state.pagination.currentPage || 1;
 
         const response = await api.get("/invoices?page=" + currentPage)
         this.setState({ invoices: response.data.data, pagination: response.data.pagination, loading: false, loading_table: false })
+    }
+
+    loadAccounts = async () => {
+
+        const response = await api.get("/accounts");
+        this.setState({ accounts: response.data });
 
     }
 
@@ -59,13 +67,15 @@ export default class Invoices extends Component {
 
     render() {
 
-        const page = parseInt(this.state.pagination.currentPage) || 1;
-        const lastPage = parseInt(this.state.pagination.lastPage);
+        const self = this.state;
 
-        let spinner_table="";
+        const page = parseInt(self.pagination.currentPage) || 1;
+        const lastPage = parseInt(self.pagination.lastPage);
+
+        let spinner_table = "";
 
         if (this.state.loading_table) {
-            spinner_table = <Spinner animation="border"  variant="light" className='spinner_table' />
+            spinner_table = <Spinner animation="border" variant="light" className='spinner_table' />
         }
 
         return (
@@ -76,6 +86,10 @@ export default class Invoices extends Component {
 
                 <div className="container_bill">
 
+                    <p>
+                        <AddInvoice loader={this.loadInvoices} accounts={self.accounts} />
+                    </p>
+
                     {spinner_table}
 
                     {this.state.loading ? (
@@ -83,6 +97,7 @@ export default class Invoices extends Component {
                     ) : (
 
                             <div>
+
                                 <Table striped bordered hover responsive variant="dark">
                                     <thead>
                                         <tr>

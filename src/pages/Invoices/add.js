@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import './styles.css';
 import { Form, Modal, Button } from 'react-bootstrap';
-import MaskedFormControl from 'react-bootstrap-maskedinput'
 import api from "./../../services/api";
 
 const AddInvoice = (props) => {
@@ -20,29 +19,31 @@ const AddInvoice = (props) => {
     const saveItem = async () => {
 
         const { amount, dt_duedate, account_id, description } = values;
-        const response = await api.post('/invoices', {
-            amount: amount,
-            dt_duedate: dt_duedate,
-            account_id: account_id,
+
+        await api.post('/invoices', {
+            amount,
+            dt_duedate,
+            account_id,
             status: 1,
-            description: description
+            description
         });
 
-        console.log(response);
     }
 
 
     const handleSubmit = e => {
         e.preventDefault();
 
-        console.log(values);
-
-        saveItem();
-        props.loader();
+        try {
+            saveItem();
+            props.loader('reset');
+        } catch (error) {
+            console.log(error);
+        }
 
     }
 
-    const [values, setValues] = useState({ amount: 0, dt_duedate: '', account_id: '1', description: '' });
+    const [values, setValues] = useState({ amount: 0, dt_duedate: '', account_id: '', description: '' });
 
     return (
         <>
@@ -63,12 +64,12 @@ const AddInvoice = (props) => {
                         </Form.Group>
                         <Form.Group controlId="dt_duedate">
                             <Form.Label>Due Date: </Form.Label>
-                            <MaskedFormControl type='text' name='dt_duedate' mask='1111-11-11' required onChange={handleInputChange} value={values.dt_duedate} />
+                            <Form.Control type='text' name='dt_duedate' mask='1111-11-11' required onChange={handleInputChange} value={values.dt_duedate} />
                         </Form.Group>
                         <Form.Group controlId="account_id">
                             <Form.Label>Account</Form.Label>
-                            <Form.Control as="select" required onChange={handleInputChange} value={values.account_id}>
-                                <option>Select Account</option>
+                            <Form.Control as="select" name="account_id" onChange={handleInputChange} value={values.account_id} >
+
                                 {props.accounts.map(account => (
                                     <option key={account.id} value={account.id}>{account.name}</option>
                                 ))}

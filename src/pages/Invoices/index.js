@@ -23,8 +23,9 @@ export default class Invoices extends Component {
         this.loadAccounts();
     }
 
-    loadInvoices = async () => {
-        var currentPage = this.state.pagination.currentPage || 1;
+    loadInvoices = async (resetPage = null) => {
+
+        var currentPage = (resetPage) ? 1 : this.state.pagination.currentPage || 1;
 
         const response = await api.get("/invoices?page=" + currentPage)
         this.setState({ invoices: response.data.data, pagination: response.data.pagination, loading: false, loading_table: false })
@@ -86,9 +87,7 @@ export default class Invoices extends Component {
 
                 <div className="container_bill">
 
-                    <p>
-                        <AddInvoice loader={this.loadInvoices} accounts={self.accounts} />
-                    </p>
+
 
                     {spinner_table}
 
@@ -97,6 +96,9 @@ export default class Invoices extends Component {
                     ) : (
 
                             <div>
+                                <p>
+                                    <AddInvoice loader={this.loadInvoices} accounts={self.accounts} />
+                                </p>
 
                                 <Table striped bordered hover responsive variant="dark">
                                     <thead>

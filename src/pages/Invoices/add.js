@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import './styles.css';
 import { Form, Modal, Button } from 'react-bootstrap';
 import api from "./../../services/api";
 import NumberFormat from 'react-number-format';
@@ -10,29 +9,29 @@ import "react-datepicker/dist/react-datepicker.css";
 
 export const EditInvoice = (props) => {
 
-    const testClick = () => {
-        alert(props.invoice_id);
-    }
+    const [show, setShow] = useState(false);
+
+    const handleClose = () => setShow(false);
+    const handleShow = () => setShow(true);
+
+    // const testClick = () => {
+    //     alert(props.invoiceId);
+    // }
 
     return (
         <>
-            <Button variant="dark" onClick={testClick}>
+            <Button variant="dark" onClick={handleShow}>
                 Details
             </Button>
+
+            <ModalInvoice show={show} invoiceId={props.invoiceId} handleClose={handleClose} handleShow={handleShow} accounts={props.accounts} />
 
 
         </>
     );
 }
 
-export const AddInvoice = (props) => {
-
-
-    const [show, setShow] = useState(false);
-
-    const handleClose = () => setShow(false);
-    const handleShow = () => setShow(true);
-
+export const ModalInvoice = (props) => {
 
     const handleInputChange = e => {
 
@@ -77,14 +76,9 @@ export const AddInvoice = (props) => {
 
     return (
         <>
-            <Button variant="dark" onClick={handleShow}>
-                New
-            </Button>
-
-
-            <Modal show={show} onHide={handleClose} animation={false}>
+            <Modal show={props.show} onHide={props.handleClose} animation={false}>
                 <Modal.Header closeButton>
-                    <Modal.Title>New Invoice</Modal.Title>
+                    <Modal.Title>New Invoice {props.invoiceId} </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <Form onSubmit={handleSubmit}>
@@ -94,7 +88,7 @@ export const AddInvoice = (props) => {
                         </Form.Group>
                         <Form.Group controlId="dt_duedate">
                             <Form.Label>Due Date: </Form.Label>
-                            <DatePicker className="input_bootstrap" id="dt_duedate" name="dt_duedate" dateFormat="yyyy-MM-dd" required selected={dt_duedate} onChange={date => setStartDate(date)} />
+                            <DatePicker className="input_bootstrap" id="dt_duedate" name="dt_duedate" dateFormat="MM/dd/yyyy" required selected={dt_duedate} onChange={date => setStartDate(date)} />
                         </Form.Group>
                         <Form.Group controlId="account_id">
                             <Form.Label>Account</Form.Label>
@@ -121,6 +115,26 @@ export const AddInvoice = (props) => {
                 </Modal.Body>
 
             </Modal>
+        </>
+    );
+}
+
+export const AddInvoice = (props) => {
+
+
+    const [show, setShow] = useState(false);
+
+    const handleClose = () => setShow(false);
+    const handleShow = () => setShow(true);
+
+    return (
+        <>
+            <Button variant="dark" onClick={handleShow}>
+                New
+            </Button>
+
+            <ModalInvoice show={show} handleClose={handleClose} handleShow={handleShow} accounts={props.accounts} />
+
         </>
     );
 }

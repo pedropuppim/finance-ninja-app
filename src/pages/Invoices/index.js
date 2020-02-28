@@ -4,7 +4,7 @@ import Header from "../../components/Header";
 import './styles.css';
 import { Table, Badge, Spinner, Button } from 'react-bootstrap';
 
-import AddInvoice from "./add";
+import AddInvoice, { EditInvoice } from "./add";
 
 const moment = require("moment");
 
@@ -103,6 +103,7 @@ export default class Invoices extends Component {
                                 <Table striped bordered hover responsive variant="dark">
                                     <thead>
                                         <tr>
+                                            <th></th>
                                             <th>#</th>
                                             <th>Date</th>
                                             <th>Amount</th>
@@ -114,9 +115,10 @@ export default class Invoices extends Component {
                                     <tbody>
                                         {this.state.invoices.map(invoice => (
                                             <tr key={invoice.id}>
+                                                <td><EditInvoice loader={this.loadInvoices} accounts={self.accounts} invoice_id={invoice.id} /></td>
                                                 <td>{invoice.id}</td>
                                                 <td>{moment(invoice.created_at).format("DD/MM/YYYY")}</td>
-                                                <td>R$ {invoice.amount}</td>
+                                                <td>R$ {invoice.amount.toFixed(2)}</td>
                                                 <td>{invoice.name_account}</td>
                                                 <td>{invoice.description}</td>
                                                 <td><Badge variant={invoice.css_status}>{invoice.name_status}</Badge></td>

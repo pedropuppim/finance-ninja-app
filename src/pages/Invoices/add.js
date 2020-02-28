@@ -2,8 +2,35 @@ import React, { useState } from 'react';
 import './styles.css';
 import { Form, Modal, Button } from 'react-bootstrap';
 import api from "./../../services/api";
+import NumberFormat from 'react-number-format';
+import './styles.css';
+import DatePicker from "react-datepicker";
 
-const AddInvoice = (props) => {
+import "react-datepicker/dist/react-datepicker.css";
+
+export const EditInvoice = (props) => {
+
+    const [show, setShow] = useState(false);
+    const handleShow = () => setShow(true);
+
+    const testClick = () => {
+        handleShow();
+    }
+
+    return (
+        <>
+            <Button variant="dark" onClick={testClick}>
+                Details
+            </Button>
+
+
+        </>
+    );
+}
+
+export const AddInvoice = (props) => {
+
+
     const [show, setShow] = useState(false);
 
     const handleClose = () => setShow(false);
@@ -11,18 +38,23 @@ const AddInvoice = (props) => {
 
 
     const handleInputChange = e => {
-        const { name, value } = e.target;
-        setValues({ ...values, [name]: value });
-    }
 
+        try {
+            const { name, value } = e.target;
+            setValues({ ...values, [name]: value });
+        } catch (error) {
+            console.log(error);
+        }
+    }
 
     const saveItem = async () => {
 
-        const { amount, dt_duedate, account_id, description } = values;
+        const { amount, account_id, description } = values;
+        const dt_duedate_formated = dt_duedate.toISOString().split('T')[0];
 
         await api.post('/invoices', {
             amount,
-            dt_duedate,
+            dt_duedate: dt_duedate_formated,
             account_id,
             status: 1,
             description
@@ -31,11 +63,11 @@ const AddInvoice = (props) => {
     }
 
 
-    const handleSubmit = e => {
+    const handleSubmit = async e => {
         e.preventDefault();
 
         try {
-            saveItem();
+            await saveItem();
             props.loader('reset');
         } catch (error) {
             console.log(error);
@@ -43,7 +75,8 @@ const AddInvoice = (props) => {
 
     }
 
-    const [values, setValues] = useState({ amount: 0, dt_duedate: '', account_id: '', description: '' });
+    const [values, setValues] = useState({ amount: '', dt_duedate: '', account_id: '', description: '' });
+    const [dt_duedate, setStartDate] = useState(new Date());
 
     return (
         <>
@@ -60,16 +93,16 @@ const AddInvoice = (props) => {
                     <Form onSubmit={handleSubmit}>
                         <Form.Group controlId="Amount">
                             <Form.Label>Amount: </Form.Label>
-                            <Form.Control type="text" name="amount" required onChange={handleInputChange} value={values.amount} />
+                            <NumberFormat className="input_bootstrap" name="amount" decimalSeparator={"."} decimalScale={2} required onChange={handleInputChange} value={values.amount} />
                         </Form.Group>
                         <Form.Group controlId="dt_duedate">
                             <Form.Label>Due Date: </Form.Label>
-                            <Form.Control type='text' name='dt_duedate' mask='1111-11-11' required onChange={handleInputChange} value={values.dt_duedate} />
+                            <DatePicker className="input_bootstrap" id="dt_duedate" name="dt_duedate" dateFormat="yyyy-MM-dd" required selected={dt_duedate} onChange={date => setStartDate(date)} />
                         </Form.Group>
                         <Form.Group controlId="account_id">
                             <Form.Label>Account</Form.Label>
-                            <Form.Control as="select" name="account_id" onChange={handleInputChange} value={values.account_id} >
-
+                            <Form.Control as="select" name="account_id" required onChange={handleInputChange} value={values.account_id} >
+                                <option value=''>Select Account</option>
                                 {props.accounts.map(account => (
                                     <option key={account.id} value={account.id}>{account.name}</option>
                                 ))}

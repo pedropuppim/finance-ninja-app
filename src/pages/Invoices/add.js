@@ -10,11 +10,8 @@ import "react-datepicker/dist/react-datepicker.css";
 
 export const EditInvoice = (props) => {
 
-    const [show, setShow] = useState(false);
-    const handleShow = () => setShow(true);
-
     const testClick = () => {
-        handleShow();
+        alert(props.invoice_id);
     }
 
     return (

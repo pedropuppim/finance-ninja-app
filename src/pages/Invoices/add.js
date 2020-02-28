@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Form, Modal, Button } from 'react-bootstrap';
+import { Form, Modal, Button, Alert } from 'react-bootstrap';
 import api from "./../../services/api";
 import NumberFormat from 'react-number-format';
 import './styles.css';
@@ -14,17 +14,14 @@ export const EditInvoice = (props) => {
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
 
-    // const testClick = () => {
-    //     alert(props.invoiceId);
-    // }
 
     return (
         <>
             <Button variant="dark" onClick={handleShow}>
-                Details
+                Edit
             </Button>
 
-            <ModalInvoice show={show} invoiceId={props.invoiceId} handleClose={handleClose} handleShow={handleShow} accounts={props.accounts} />
+            <ModalInvoice show={show} loader={props.loader} invoiceId={props.invoiceId} handleClose={handleClose} handleShow={handleShow} accounts={props.accounts} />
 
 
         </>
@@ -33,8 +30,17 @@ export const EditInvoice = (props) => {
 
 export const ModalInvoice = (props) => {
 
-    const handleInputChange = e => {
+    const [values, setValues] = useState({ amount: '', dt_duedate: '', account_id: '', description: '' });
+    const [dt_duedate, setStartDate] = useState(new Date());
+    const [msgSuccess, setSuccess] = useState(false);
 
+    const loadItem = async () => {
+        const invoice = await api.get('/invoices/' + props.invoiceId);
+        setValues(invoice.data);
+    }
+
+
+    const handleInputChange = e => {
         try {
             const { name, value } = e.target;
             setValues({ ...values, [name]: value });
@@ -48,22 +54,34 @@ export const ModalInvoice = (props) => {
         const { amount, account_id, description } = values;
         const dt_duedate_formated = dt_duedate.toISOString().split('T')[0];
 
-        await api.post('/invoices', {
-            amount,
-            dt_duedate: dt_duedate_formated,
-            account_id,
-            status: 1,
-            description
-        });
+        if (props.invoiceId) {
+            await api.put('/invoices/' + props.invoiceId, {
+                amount,
+                dt_duedate: dt_duedate_formated,
+                account_id,
+                status: 1,
+                description
+            });
+        } else {
+            await api.post('/invoices', {
+                amount,
+                dt_duedate: dt_duedate_formated,
+                account_id,
+                status: 1,
+                description
+            });
+        }
+
 
     }
-
 
     const handleSubmit = async e => {
         e.preventDefault();
 
         try {
             await saveItem();
+            setSuccess(true);
+            setTimeout(e => { props.handleClose(); }, 1000);
             props.loader('reset');
         } catch (error) {
             console.log(error);
@@ -71,8 +89,9 @@ export const ModalInvoice = (props) => {
 
     }
 
-    const [values, setValues] = useState({ amount: '', dt_duedate: '', account_id: '', description: '' });
-    const [dt_duedate, setStartDate] = useState(new Date());
+    if (props.show && props.invoiceId && !values.amount) {
+        loadItem();
+    }
 
     return (
         <>
@@ -81,6 +100,8 @@ export const ModalInvoice = (props) => {
                     <Modal.Title>New Invoice {props.invoiceId} </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
+
+                    <Alert show={msgSuccess} variant="success">Saved successfully</Alert>
                     <Form onSubmit={handleSubmit}>
                         <Form.Group controlId="Amount">
                             <Form.Label>Amount: </Form.Label>
@@ -133,7 +154,7 @@ export const AddInvoice = (props) => {
                 New
             </Button>
 
-            <ModalInvoice show={show} handleClose={handleClose} handleShow={handleShow} accounts={props.accounts} />
+            <ModalInvoice show={show} loader={props.loader} handleClose={handleClose} handleShow={handleShow} accounts={props.accounts} />
 
         </>
     );

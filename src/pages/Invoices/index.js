@@ -87,8 +87,6 @@ export default class Invoices extends Component {
 
                 <div className="container_bill">
 
-
-
                     {spinner_table}
 
                     {this.state.loading ? (

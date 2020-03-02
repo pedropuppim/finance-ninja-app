@@ -19,7 +19,7 @@ export default class Companies extends Component {
     }
 
     loadAccounts = async () => {
-        const response = await api.get("/Companies");
+        const response = await api.get("/companies");
         this.setState({ companies: response.data, loading: false })
     }
 

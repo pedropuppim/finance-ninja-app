@@ -4,6 +4,8 @@ import api from "./../../services/api";
 import NumberFormat from 'react-number-format';
 import './styles.css';
 import DatePicker from "react-datepicker";
+import ButtonEdit from './images/edit2.png';
+
 
 import "react-datepicker/dist/react-datepicker.css";
 
@@ -14,14 +16,11 @@ export const EditInvoice = (props) => {
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
 
-
     return (
         <>
-            <Button variant="dark" onClick={handleShow}>
-                Edit
-            </Button>
 
-            <ModalInvoice show={show} loader={props.loader} invoiceId={props.invoiceId} handleClose={handleClose} handleShow={handleShow} accounts={props.accounts} />
+            <img src={ButtonEdit} className="button-edit" onClick={handleShow} alt="Edit Invoice" />
+            <ModalInvoice show={show} loader={props.loader} invoiceId={props.invoiceId} handleClose={handleClose} handleShow={handleShow} accounts={props.accounts} companies={props.companies} />
 
 
         </>
@@ -30,7 +29,7 @@ export const EditInvoice = (props) => {
 
 export const ModalInvoice = (props) => {
 
-    const [values, setValues] = useState({ amount: '', dt_duedate: '', account_id: '', description: '' });
+    const [values, setValues] = useState({ amount: '', dt_duedate: '', account_id: '', company_id: '', description: '' });
     const [dt_duedate, setStartDate] = useState(new Date());
     const [msgSuccess, setSuccess] = useState(false);
 
@@ -51,7 +50,7 @@ export const ModalInvoice = (props) => {
 
     const saveItem = async () => {
 
-        const { amount, account_id, description } = values;
+        const { amount, account_id, company_id, description } = values;
         const dt_duedate_formated = dt_duedate.toISOString().split('T')[0];
 
         if (props.invoiceId) {
@@ -59,6 +58,7 @@ export const ModalInvoice = (props) => {
                 amount,
                 dt_duedate: dt_duedate_formated,
                 account_id,
+                company_id,
                 status: 1,
                 description
             });
@@ -67,6 +67,7 @@ export const ModalInvoice = (props) => {
                 amount,
                 dt_duedate: dt_duedate_formated,
                 account_id,
+                company_id,
                 status: 1,
                 description
             });
@@ -81,8 +82,12 @@ export const ModalInvoice = (props) => {
         try {
             await saveItem();
             setSuccess(true);
-            setTimeout(e => { props.handleClose(); }, 1000);
+            setTimeout(e => {
+                props.handleClose();
+                setValues({ amount: '', dt_duedate: '', account_id: '', company_id: '', description: '' });
+            }, 1500);
             props.loader('reset');
+
         } catch (error) {
             console.log(error);
         }
@@ -120,6 +125,17 @@ export const ModalInvoice = (props) => {
                                 ))}
                             </Form.Control>
                         </Form.Group>
+
+                        <Form.Group controlId="account_id">
+                            <Form.Label>Company</Form.Label>
+                            <Form.Control as="select" name="company_id" required onChange={handleInputChange} value={values.company_id} >
+                                <option value=''>Select Company</option>
+                                {props.companies.map(company => (
+                                    <option key={company.id} value={company.id}>{company.name}</option>
+                                ))}
+                            </Form.Control>
+                        </Form.Group>
+
                         <Form.Group controlId="description">
                             <Form.Label>Description: </Form.Label>
                             <Form.Control type="text" name="description" placeholder="Enter Description" required onChange={handleInputChange} value={values.description} />
@@ -154,7 +170,7 @@ export const AddInvoice = (props) => {
                 New
             </Button>
 
-            <ModalInvoice show={show} loader={props.loader} handleClose={handleClose} handleShow={handleShow} accounts={props.accounts} />
+            <ModalInvoice show={show} loader={props.loader} handleClose={handleClose} handleShow={handleShow} accounts={props.accounts} companies={props.companies} />
 
         </>
     );

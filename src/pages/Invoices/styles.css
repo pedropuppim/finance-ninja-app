@@ -43,3 +43,9 @@
 .react-datepicker-wrapper{
     display: inline !important;
 }
+
+.button-edit{
+    width: 15px;
+    height: 15px;
+    cursor: pointer;
+}

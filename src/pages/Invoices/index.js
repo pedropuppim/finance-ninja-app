@@ -13,6 +13,7 @@ export default class Invoices extends Component {
     state = {
         invoices: [],
         accounts: [],
+        companies: [],
         pagination: [],
         loading: true,
         loading_table: false
@@ -20,7 +21,9 @@ export default class Invoices extends Component {
 
     componentDidMount() {
         this.loadInvoices();
+        this.loadCompanies();
         this.loadAccounts();
+
     }
 
     loadInvoices = async (resetPage = null) => {
@@ -31,13 +34,17 @@ export default class Invoices extends Component {
         this.setState({ invoices: response.data.data, pagination: response.data.pagination, loading: false, loading_table: false })
     }
 
-    loadAccounts = async () => {
+    loadCompanies = async () => {
 
-        const response = await api.get("/accounts");
-        this.setState({ accounts: response.data });
+        const response = await api.get("/companies");
+        this.setState({ companies: response.data });
 
     }
 
+    loadAccounts = async () => {
+        const response = await api.get("/accounts");
+        this.setState({ accounts: response.data });
+    }
 
     pagination = async (ptype) => {
         var pagination = this.state.pagination;
@@ -95,7 +102,7 @@ export default class Invoices extends Component {
 
                             <div>
                                 <p>
-                                    <AddInvoice loader={this.loadInvoices} accounts={self.accounts} />
+                                    <AddInvoice loader={this.loadInvoices} accounts={self.accounts} companies={self.companies} />
                                 </p>
 
                                 <Table striped bordered hover responsive variant="dark">
@@ -105,6 +112,7 @@ export default class Invoices extends Component {
                                             <th>#</th>
                                             <th>Date</th>
                                             <th>Amount</th>
+                                            <th>Company</th>
                                             <th>Account</th>
                                             <th>Description</th>
                                             <th>Status</th>
@@ -113,10 +121,11 @@ export default class Invoices extends Component {
                                     <tbody>
                                         {this.state.invoices.map(invoice => (
                                             <tr key={invoice.id}>
-                                                <td><EditInvoice loader={this.loadInvoices} accounts={self.accounts} invoiceId={invoice.id} /></td>
+                                                <td><EditInvoice loader={this.loadInvoices} accounts={self.accounts} companies={self.companies} invoiceId={invoice.id} /></td>
                                                 <td>{invoice.id}</td>
                                                 <td>{moment(invoice.created_at).format("DD/MM/YYYY")}</td>
                                                 <td>R$ {invoice.amount.toFixed(2)}</td>
+                                                <td>{invoice.name_company}</td>
                                                 <td>{invoice.name_account}</td>
                                                 <td>{invoice.description}</td>
                                                 <td><Badge variant={invoice.css_status}>{invoice.name_status}</Badge></td>

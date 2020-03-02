@@ -114,7 +114,7 @@ export default class Invoices extends Component {
                                             <th>Amount</th>
                                             <th>Company</th>
                                             <th>Account</th>
-                                            <th>Description</th>
+                                            <th>Type</th>
                                             <th>Status</th>
                                         </tr>
                                     </thead>
@@ -123,11 +123,11 @@ export default class Invoices extends Component {
                                             <tr key={invoice.id}>
                                                 <td><EditInvoice loader={this.loadInvoices} accounts={self.accounts} companies={self.companies} invoiceId={invoice.id} /></td>
                                                 <td>{invoice.id}</td>
-                                                <td>{moment(invoice.created_at).format("DD/MM/YYYY")}</td>
+                                                <td>{moment(invoice.created_at).format("DD/MM/YY")}</td>
                                                 <td>R$ {invoice.amount.toFixed(2)}</td>
                                                 <td>{invoice.name_company}</td>
                                                 <td>{invoice.name_account}</td>
-                                                <td>{invoice.description}</td>
+                                                <td>{invoice.type === "1" ? "Pay" : "Receive"}</td>
                                                 <td><Badge variant={invoice.css_status}>{invoice.name_status}</Badge></td>
                                             </tr>
                                         ))}

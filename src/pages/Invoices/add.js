@@ -29,7 +29,7 @@ export const EditInvoice = (props) => {
 
 export const ModalInvoice = (props) => {
 
-    const [values, setValues] = useState({ amount: '', dt_duedate: '', account_id: '', company_id: '', description: '', status: '' });
+    const [values, setValues] = useState({ amount: '', dt_duedate: '', account_id: '', company_id: '', description: '', status: '', type: '' });
     const [dt_duedate, setStartDate] = useState(new Date());
     const [msgSuccess, setSuccess] = useState(false);
 
@@ -55,7 +55,7 @@ export const ModalInvoice = (props) => {
 
     const saveItem = async () => {
 
-        const { amount, account_id, company_id, description, status } = values;
+        const { amount, account_id, company_id, description, status, type } = values;
         const dt_duedate_formated = dt_duedate.toISOString().split('T')[0];
 
         if (props.invoiceId) {
@@ -65,6 +65,7 @@ export const ModalInvoice = (props) => {
                 account_id,
                 company_id,
                 status,
+                type,
                 description
             });
         } else {
@@ -74,6 +75,7 @@ export const ModalInvoice = (props) => {
                 account_id,
                 company_id,
                 status,
+                type,
                 description
             });
         }
@@ -89,7 +91,7 @@ export const ModalInvoice = (props) => {
             setSuccess(true);
             setTimeout(e => {
                 props.handleClose();
-                setValues({ amount: '', dt_duedate: '', account_id: '', company_id: '', description: '', status: '' });
+                setValues({ amount: '', dt_duedate: '', account_id: '', company_id: '', description: '', status: '', type: '' });
                 setSuccess(false);
             }, 1500);
             props.loader('reset');
@@ -155,6 +157,14 @@ export const ModalInvoice = (props) => {
                                     </Form.Group>
                                 </Col>
                             </Row>
+
+                            <Form.Group controlId="account_id">
+                                <Form.Label>Type</Form.Label>
+                                <Form.Control as="select" name="type" required onChange={handleInputChange} value={values.type} >
+                                    <option value='1'>Pay</option>
+                                    <option value='2'>Receive</option>
+                                </Form.Control>
+                            </Form.Group>
 
                             <Form.Group controlId="description">
                                 <Form.Label>Description: </Form.Label>

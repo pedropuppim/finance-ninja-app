@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { Form, Modal, Button, Alert } from 'react-bootstrap';
+import { Form, Modal, Button, Alert, Container, Row, Col } from 'react-bootstrap';
 import api from "./../../services/api";
-import NumberFormat from 'react-number-format';
 import './styles.css';
 import DatePicker from "react-datepicker";
 import ButtonEdit from './images/edit2.png';
+import CurrencyInput from 'react-currency-input';
 
 
 import "react-datepicker/dist/react-datepicker.css";
@@ -29,19 +29,24 @@ export const EditInvoice = (props) => {
 
 export const ModalInvoice = (props) => {
 
-    const [values, setValues] = useState({ amount: '', dt_duedate: '', account_id: '', company_id: '', description: '' });
+    const [values, setValues] = useState({ amount: '', dt_duedate: '', account_id: '', company_id: '', description: '', status: '' });
     const [dt_duedate, setStartDate] = useState(new Date());
     const [msgSuccess, setSuccess] = useState(false);
 
     const loadItem = async () => {
         const invoice = await api.get('/invoices/' + props.invoiceId);
         setValues(invoice.data);
+
+        const dt_duedate_formated = invoice.data.dt_duedate.split('T')[0];
+        var duedateDate = new Date(dt_duedate_formated);
+        setStartDate(duedateDate);
     }
 
 
-    const handleInputChange = e => {
+    const handleInputChange = (e, p, c) => {
+
         try {
-            const { name, value } = e.target;
+            const { name, value } = e.target ? e.target : c.target;
             setValues({ ...values, [name]: value });
         } catch (error) {
             console.log(error);
@@ -50,7 +55,7 @@ export const ModalInvoice = (props) => {
 
     const saveItem = async () => {
 
-        const { amount, account_id, company_id, description } = values;
+        const { amount, account_id, company_id, description, status } = values;
         const dt_duedate_formated = dt_duedate.toISOString().split('T')[0];
 
         if (props.invoiceId) {
@@ -59,7 +64,7 @@ export const ModalInvoice = (props) => {
                 dt_duedate: dt_duedate_formated,
                 account_id,
                 company_id,
-                status: 1,
+                status,
                 description
             });
         } else {
@@ -68,7 +73,7 @@ export const ModalInvoice = (props) => {
                 dt_duedate: dt_duedate_formated,
                 account_id,
                 company_id,
-                status: 1,
+                status,
                 description
             });
         }
@@ -84,9 +89,11 @@ export const ModalInvoice = (props) => {
             setSuccess(true);
             setTimeout(e => {
                 props.handleClose();
-                setValues({ amount: '', dt_duedate: '', account_id: '', company_id: '', description: '' });
+                setValues({ amount: '', dt_duedate: '', account_id: '', company_id: '', description: '', status: '' });
+                setSuccess(false);
             }, 1500);
             props.loader('reset');
+
 
         } catch (error) {
             console.log(error);
@@ -106,49 +113,71 @@ export const ModalInvoice = (props) => {
                 </Modal.Header>
                 <Modal.Body>
 
-                    <Alert show={msgSuccess} variant="success">Saved successfully</Alert>
-                    <Form onSubmit={handleSubmit}>
-                        <Form.Group controlId="Amount">
-                            <Form.Label>Amount: </Form.Label>
-                            <NumberFormat className="input_bootstrap" name="amount" decimalSeparator={"."} decimalScale={2} required onChange={handleInputChange} value={values.amount} />
-                        </Form.Group>
-                        <Form.Group controlId="dt_duedate">
-                            <Form.Label>Due Date: </Form.Label>
-                            <DatePicker className="input_bootstrap" id="dt_duedate" name="dt_duedate" dateFormat="MM/dd/yyyy" required selected={dt_duedate} onChange={date => setStartDate(date)} />
-                        </Form.Group>
-                        <Form.Group controlId="account_id">
-                            <Form.Label>Account</Form.Label>
-                            <Form.Control as="select" name="account_id" required onChange={handleInputChange} value={values.account_id} >
-                                <option value=''>Select Account</option>
-                                {props.accounts.map(account => (
-                                    <option key={account.id} value={account.id}>{account.name}</option>
-                                ))}
-                            </Form.Control>
-                        </Form.Group>
+                    <Container>
+                        <Alert show={msgSuccess} variant="success">Saved successfully</Alert>
+                        <Form onSubmit={handleSubmit}>
 
-                        <Form.Group controlId="account_id">
-                            <Form.Label>Company</Form.Label>
-                            <Form.Control as="select" name="company_id" required onChange={handleInputChange} value={values.company_id} >
-                                <option value=''>Select Company</option>
-                                {props.companies.map(company => (
-                                    <option key={company.id} value={company.id}>{company.name}</option>
-                                ))}
-                            </Form.Control>
-                        </Form.Group>
+                            <Row>
+                                <Col>
+                                    <Form.Group controlId="Amount">
+                                        <Form.Label>Amount: </Form.Label>
+                                        <CurrencyInput className="input_bootstrap" name="amount" required onChange={handleInputChange} value={values.amount} />
+                                    </Form.Group>
+                                </Col>
+                                <Col>
+                                    <Form.Group controlId="dt_duedate">
+                                        <Form.Label>Due Date: </Form.Label>
+                                        <DatePicker className="input_bootstrap" id="dt_duedate" name="dt_duedate" dateFormat="MM/dd/yyyy" required selected={dt_duedate} onChange={date => setStartDate(date)} />
+                                    </Form.Group>
+                                </Col>
+                            </Row>
+                            <Row>
+                                <Col>
+                                    <Form.Group controlId="account_id">
+                                        <Form.Label>Account</Form.Label>
+                                        <Form.Control as="select" name="account_id" required onChange={handleInputChange} value={values.account_id} >
+                                            <option value=''>Select Account</option>
+                                            {props.accounts.map(account => (
+                                                <option key={account.id} value={account.id}>{account.name}</option>
+                                            ))}
+                                        </Form.Control>
+                                    </Form.Group>
+                                </Col>
+                                <Col>
+                                    <Form.Group controlId="account_id">
+                                        <Form.Label>Company</Form.Label>
+                                        <Form.Control as="select" name="company_id" required onChange={handleInputChange} value={values.company_id} >
+                                            <option value=''>Select Company</option>
+                                            {props.companies.map(company => (
+                                                <option key={company.id} value={company.id}>{company.name}</option>
+                                            ))}
+                                        </Form.Control>
+                                    </Form.Group>
+                                </Col>
+                            </Row>
 
-                        <Form.Group controlId="description">
-                            <Form.Label>Description: </Form.Label>
-                            <Form.Control type="text" name="description" placeholder="Enter Description" required onChange={handleInputChange} value={values.description} />
-                        </Form.Group>
+                            <Form.Group controlId="description">
+                                <Form.Label>Description: </Form.Label>
+                                <Form.Control type="text" name="description" placeholder="Enter Description" required onChange={handleInputChange} value={values.description} />
+                            </Form.Group>
 
-                        <Modal.Footer>
+                            <Form.Group controlId="status">
+                                <Form.Label>Status: </Form.Label><br />
+                                <Form.Check inline label="Open" type='radio' name='status' id='status_radio1' value='1' onChange={handleInputChange} checked={values.status === "1"} />
+                                <Form.Check inline label="Paid" type='radio' name='status' id='status_radio2' value='2' onChange={handleInputChange} checked={values.status === "2"} />
+                                <Form.Check inline label="Canceled" type='radio' name='status' id='status_radio3' value='3' onChange={handleInputChange} checked={values.status === "3"} />
 
-                            <Button variant="dark" type="submit">
-                                Save
-                            </Button>
+                            </Form.Group>
 
-                        </Modal.Footer>
-                    </Form>
+
+
+
+                            <Modal.Footer>
+                                <Button variant="dark" type="submit"> Save </Button>
+                            </Modal.Footer>
+
+                        </Form>
+                    </Container>
                 </Modal.Body>
 
             </Modal>

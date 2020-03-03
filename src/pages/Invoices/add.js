@@ -3,7 +3,7 @@ import { Form, Modal, Button, Alert, Container, Row, Col } from 'react-bootstrap
 import api from "./../../services/api";
 import './styles.css';
 import DatePicker from "react-datepicker";
-import ButtonEdit from './images/edit2.png';
+import ButtonEdit from './../../assets/images/edit2.png';
 import CurrencyInput from 'react-currency-input';
 
 
@@ -158,28 +158,31 @@ export const ModalInvoice = (props) => {
                                 </Col>
                             </Row>
 
-                            <Form.Group controlId="account_id">
-                                <Form.Label>Type</Form.Label>
-                                <Form.Control as="select" name="type" required onChange={handleInputChange} value={values.type} >
-                                    <option value='1'>Pay</option>
-                                    <option value='2'>Receive</option>
-                                </Form.Control>
-                            </Form.Group>
+                            <Row>
+                                <Col xs={4}>
+                                    <Form.Group controlId="account_id">
+                                        <Form.Label>Type</Form.Label>
+                                        <Form.Control as="select" name="type" required onChange={handleInputChange} value={values.type} >
+                                            <option value='1'>Pay</option>
+                                            <option value='2'>Receive</option>
+                                        </Form.Control>
+                                    </Form.Group>
+                                </Col>
+                                <Col xs={8}>
+                                    <Form.Group controlId="status">
+                                        <Form.Label>Status: </Form.Label><br />
+                                        <Form.Check inline label="Open" type='radio' name='status' id='status_radio1' value='1' onChange={handleInputChange} checked={values.status === "1"} required />
+                                        <Form.Check inline label="Paid" type='radio' name='status' id='status_radio2' value='2' onChange={handleInputChange} checked={values.status === "2"} required />
+                                        <Form.Check inline label="Canceled" type='radio' name='status' id='status_radio3' value='3' onChange={handleInputChange} checked={values.status === "3"} required />
+
+                                    </Form.Group>
+                                </Col>
+                            </Row>
 
                             <Form.Group controlId="description">
                                 <Form.Label>Description: </Form.Label>
-                                <Form.Control type="text" name="description" placeholder="Enter Description" required onChange={handleInputChange} value={values.description} />
+                                <Form.Control type="text" name="description" placeholder="Enter Description" onChange={handleInputChange} value={values.description} />
                             </Form.Group>
-
-                            <Form.Group controlId="status">
-                                <Form.Label>Status: </Form.Label><br />
-                                <Form.Check inline label="Open" type='radio' name='status' id='status_radio1' value='1' onChange={handleInputChange} checked={values.status === "1"} />
-                                <Form.Check inline label="Paid" type='radio' name='status' id='status_radio2' value='2' onChange={handleInputChange} checked={values.status === "2"} />
-                                <Form.Check inline label="Canceled" type='radio' name='status' id='status_radio3' value='3' onChange={handleInputChange} checked={values.status === "3"} />
-
-                            </Form.Group>
-
-
 
 
                             <Modal.Footer>

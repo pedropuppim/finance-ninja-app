@@ -4,21 +4,23 @@ import Header from "./../../components/Header";
 import './styles.css';
 import { Table, Spinner } from 'react-bootstrap';
 
+import AddCompany, { EditCompany } from "./add";
+
 const moment = require("moment");
 
 
 export default class Companies extends Component {
 
     state = {
-        customers: [],
+        companies: [],
         loading: true
     }
 
     componentDidMount() {
-        this.loadAccounts();
+        this.loadCompanies();
     }
 
-    loadAccounts = async () => {
+    loadCompanies = async () => {
         const response = await api.get("/companies");
         this.setState({ companies: response.data, loading: false })
     }
@@ -33,24 +35,31 @@ export default class Companies extends Component {
                     {this.state.loading ? (
                         <Spinner animation="grow" className='spinner' />
                     ) : (
-                            <Table striped bordered hover responsive variant="dark">
-                                <thead>
-                                    <tr>
-                                        <th>#</th>
-                                        <th>Date Created</th>
-                                        <th>Name</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {this.state.companies.map(company => (
-                                        <tr key={company.id}>
-                                            <td>{company.id}</td>
-                                            <td>{moment(company.created_at).format("DD/MM/YYYY")}</td>
-                                            <td>{company.name}</td>
+
+                            <div>
+                                <p><AddCompany loader={this.loadCompanies} /></p>
+
+                                <Table striped bordered hover responsive variant="dark">
+                                    <thead>
+                                        <tr>
+                                            <th></th>
+                                            <th>#</th>
+                                            <th>Date Created</th>
+                                            <th>Name</th>
                                         </tr>
-                                    ))}
-                                </tbody>
-                            </Table>
+                                    </thead>
+                                    <tbody>
+                                        {this.state.companies.map(company => (
+                                            <tr key={company.id}>
+                                                <td><EditCompany loader={this.loadCompanies} companyId={company.id} /></td>
+                                                <td>{company.id}</td>
+                                                <td>{moment(company.created_at).format("DD/MM/YYYY")}</td>
+                                                <td>{company.name}</td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </Table>
+                            </div>
                         )
                     }
                 </div>

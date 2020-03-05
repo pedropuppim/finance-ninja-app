@@ -29,7 +29,7 @@ export const EditInvoice = (props) => {
 
 export const ModalInvoice = (props) => {
 
-    const [values, setValues] = useState({ amount: '', dt_duedate: '', account_id: '', company_id: '', description: '', status: '', type: '' });
+    const [values, setValues] = useState({ amount: '', dt_duedate: '', account_id: '', company_id: '', description: '', status: "1", type: '' });
     const [dt_duedate, setStartDate] = useState(new Date());
     const [msgSuccess, setSuccess] = useState(false);
 
@@ -55,8 +55,10 @@ export const ModalInvoice = (props) => {
 
     const saveItem = async () => {
 
-        const { amount, account_id, company_id, description, status, type } = values;
-        const dt_duedate_formated = dt_duedate.toISOString().split('T')[0];
+        var { amount, account_id, company_id, description, status, type } = values;
+        var dt_duedate_formated = dt_duedate.toISOString().split('T')[0];
+
+        amount = amount.replace(',', '');
 
         if (props.invoiceId) {
             await api.put('/invoices/' + props.invoiceId, {
@@ -91,7 +93,7 @@ export const ModalInvoice = (props) => {
             setSuccess(true);
             setTimeout(e => {
                 props.handleClose();
-                setValues({ amount: '', dt_duedate: '', account_id: '', company_id: '', description: '', status: '', type: '' });
+                setValues({ amount: '', dt_duedate: '', account_id: '', company_id: '', description: '', status: "1", type: '' });
                 setSuccess(false);
             }, 1500);
             props.loader('reset');

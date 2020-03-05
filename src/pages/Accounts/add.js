@@ -44,7 +44,9 @@ export const ModalAccount = (props) => {
 
     const saveItem = async () => {
 
-        const { name, balance } = values;
+        var { name, balance } = values;
+
+        balance = balance.replace(',', '');
 
         if (props.accountId) {
             await api.put('/accounts/' + props.accountId, {

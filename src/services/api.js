@@ -11,19 +11,27 @@ const api = axios.create({
 api.interceptors.request.use(async config => {
 
   const token = getToken();
-  const expire = getExpire();
-  if (Math.floor(Date.now()) > expire) {
+  const diff = getExpire() - Math.floor(Date.now());
 
-    swal({
-      title: "Session Expired",
-      text: "You will be redirected to the login page!",
-      icon: "warning",
-      dangerMode: true,
-    })
-      .then(() => {
-        logout();
-        window.location = '/login';
-      });
+
+  if (diff < 0) {
+
+    if (diff > -20000) {
+      swal({
+        title: "Session Expired",
+        text: "You will be redirected to the login page!",
+        icon: "warning",
+        dangerMode: true,
+      })
+        .then(() => {
+          logout();
+          window.location = '/login';
+        });
+    } else {
+      logout();
+      window.location = '/login';
+    }
+
 
   }
 

@@ -110,7 +110,7 @@ export default class Invoices extends Component {
                                         <tr>
                                             <th></th>
                                             <th>#</th>
-                                            <th>Date</th>
+                                            <th>Due Date</th>
                                             <th>Amount</th>
                                             <th>Company</th>
                                             <th>Account</th>
@@ -123,7 +123,7 @@ export default class Invoices extends Component {
                                             <tr key={invoice.id}>
                                                 <td><EditInvoice loader={this.loadInvoices} accounts={self.accounts} companies={self.companies} invoiceId={invoice.id} /></td>
                                                 <td>{invoice.id}</td>
-                                                <td>{moment(invoice.created_at).format("DD/MM/YY")}</td>
+                                                <td>{moment(invoice.dt_duedate).format("DD/MM/YY")}</td>
                                                 <td>R$ {invoice.amount.toFixed(2)}</td>
                                                 <td>{invoice.name_company}</td>
                                                 <td>{invoice.name_account}</td>

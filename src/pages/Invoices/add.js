@@ -29,7 +29,7 @@ export const EditInvoice = (props) => {
 
 export const ModalInvoice = (props) => {
 
-    const [values, setValues] = useState({ amount: '', dt_duedate: '', account_id: '', company_id: '', description: '', status: "1", type: '' });
+    const [values, setValues] = useState({ amount: '', dt_duedate: '', account_id: '', company_id: '', description: '', status: "1", type: "1" });
     const [dt_duedate, setStartDate] = useState(new Date());
     const [msgSuccess, setSuccess] = useState(false);
 
@@ -93,7 +93,7 @@ export const ModalInvoice = (props) => {
             setSuccess(true);
             setTimeout(e => {
                 props.handleClose();
-                setValues({ amount: '', dt_duedate: '', account_id: '', company_id: '', description: '', status: "1", type: '' });
+                setValues({ amount: '', dt_duedate: '', account_id: '', company_id: '', description: '', status: "1", type: '1' });
                 setSuccess(false);
             }, 1500);
             props.loader('reset');

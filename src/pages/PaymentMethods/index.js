@@ -1,30 +1,29 @@
 import React, { Component } from 'react';
-import api from "./../../services/api";
-import Header from "./../../components/Header";
+import api from "../../services/api";
+import Header from "../../components/Header";
 import './styles.css';
 import { Table, Spinner } from 'react-bootstrap';
-import AddAccount, { EditAccount } from "./add";
+
+import AddPaymentMethod, { EditPaymentMethod } from "./add";
 
 const moment = require("moment");
 
 
-export default class Accounts extends Component {
+export default class PaymentMethods extends Component {
 
     state = {
-        accounts: [],
+        payment_methods: [],
         loading: true
     }
 
     componentDidMount() {
-        this.loadAccounts();
+        this.loadpayment_methods();
     }
 
-    loadAccounts = async () => {
-        const response = await api.get("/accounts");
-        this.setState({ accounts: response.data, loading: false })
-
+    loadpayment_methods = async () => {
+        const response = await api.get("/payment_methods");
+        this.setState({ payment_methods: response.data, loading: false })
     }
-
 
     render() {
         return (
@@ -35,26 +34,26 @@ export default class Accounts extends Component {
                     {this.state.loading ? (
                         <Spinner animation="grow" className='spinner' />
                     ) : (
+
                             <div>
-                                <p><AddAccount loader={this.loadAccounts} /></p>
+                                <p><AddPaymentMethod loader={this.loadpayment_methods} /></p>
+
                                 <Table striped bordered hover responsive variant="striped bordered hover">
                                     <thead>
                                         <tr>
                                             <th></th>
                                             <th>#</th>
-                                            <th>Date Created</th>
-                                            <th>Name</th>
-                                            <th>Balance</th>
+                                            <th>Data da Criação</th>
+                                            <th>Nome</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {this.state.accounts.map(account => (
-                                            <tr key={account.id}>
-                                                <td><EditAccount loader={this.loadAccounts} accountId={account.id} /></td>
-                                                <td>{account.id}</td>
-                                                <td>{moment(account.created_at).format("DD/MM/YYYY")}</td>
-                                                <td>{account.name}</td>
-                                                <td>R$ {account.balance.toFixed(2)}</td>
+                                        {this.state.payment_methods.map(payment_method => (
+                                            <tr key={payment_method.id}>
+                                                <td><EditPaymentMethod loader={this.loadpayment_methods} PaymentMethodId={payment_method.id} /></td>
+                                                <td>{payment_method.id}</td>
+                                                <td>{moment(payment_method.created_at).format("DD/MM/YYYY")}</td>
+                                                <td>{payment_method.name}</td>
                                             </tr>
                                         ))}
                                     </tbody>

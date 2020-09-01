@@ -39,13 +39,13 @@ export default class Companies extends Component {
                             <div>
                                 <p><AddCompany loader={this.loadCompanies} /></p>
 
-                                <Table striped bordered hover responsive variant="dark">
+                                <Table striped bordered hover responsive variant="striped bordered hover">
                                     <thead>
                                         <tr>
                                             <th></th>
                                             <th>#</th>
-                                            <th>Date Created</th>
-                                            <th>Name</th>
+                                            <th>Data de Criação</th>
+                                            <th>Nome</th>
                                         </tr>
                                     </thead>
                                     <tbody>

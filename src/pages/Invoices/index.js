@@ -105,7 +105,7 @@ export default class Invoices extends Component {
                                     <AddInvoice loader={this.loadInvoices} accounts={self.accounts} companies={self.companies} />
                                 </p>
 
-                                <Table striped bordered hover responsive variant="dark">
+                                <Table striped bordered hover responsive variant="striped bordered hover">
                                     <thead>
                                         <tr>
                                             <th></th>
@@ -127,14 +127,14 @@ export default class Invoices extends Component {
                                                 <td>R$ {invoice.amount.toFixed(2)}</td>
                                                 <td>{invoice.name_company}</td>
                                                 <td>{invoice.name_account}</td>
-                                                <td>{invoice.type === "1" ? "Pay" : "Receive"}</td>
+                                                <td>{invoice.type === "1" ? "Pagar" : "Receber"}</td>
                                                 <td><Badge variant={invoice.css_status}>{invoice.name_status}</Badge></td>
                                             </tr>
                                         ))}
                                     </tbody>
                                 </Table>
-                                <Button variant="dark" disabled={page === 1} onClick={() => this.pagination('previous')}>Previous</Button>
-                                <Button variant="dark" disabled={page === lastPage} onClick={() => this.pagination('next')} style={{ float: "right" }}>Next</Button>
+                                <Button variant="dark" disabled={page === 1} onClick={() => this.pagination('previous')}>Anterior</Button>
+                                <Button variant="dark" disabled={page === lastPage} onClick={() => this.pagination('next')} style={{ float: "right" }}>Próxima</Button>
                             </div>
 
 

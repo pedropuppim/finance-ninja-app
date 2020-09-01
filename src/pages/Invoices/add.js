@@ -3,9 +3,9 @@ import { Form, Modal, Button, Alert, Container, Row, Col } from 'react-bootstrap
 import api from "./../../services/api";
 import './styles.css';
 import DatePicker from "react-datepicker";
-import ButtonEdit from './../../assets/images/edit2.png';
+import ButtonEdit from './../../assets/images/edit.png';
 import CurrencyInput from 'react-currency-input';
-
+import valueDb from '../../utils/money';
 
 import "react-datepicker/dist/react-datepicker.css";
 
@@ -53,12 +53,35 @@ export const ModalInvoice = (props) => {
         }
     }
 
+    const removeItem = async (id) => {
+
+        try {
+            if (window.confirm("Você realmente deseja remover esse Lançamento?")) {
+                await api.delete('/invoices/' + id);
+
+                setSuccess('Removido com sucesso.');
+                setTimeout(e => {
+                    props.handleClose();
+                    setValues({ name: '' });
+                    setSuccess(false);
+                }, 1500);
+
+                props.loader('reset');
+            }
+        } catch (error) {
+            console.log(error);
+        }
+
+
+    }
+
     const saveItem = async () => {
 
         var { amount, account_id, company_id, description, status, type } = values;
         var dt_duedate_formated = dt_duedate.toISOString().split('T')[0];
 
-        amount = amount.replace(',', '');
+        
+        amount = valueDb(amount);
 
         if (props.invoiceId) {
             await api.put('/invoices/' + props.invoiceId, {
@@ -113,19 +136,19 @@ export const ModalInvoice = (props) => {
         <>
             <Modal show={props.show} onHide={props.handleClose} animation={false}>
                 <Modal.Header closeButton>
-                    <Modal.Title>New Invoice {props.invoiceId} </Modal.Title>
+                    <Modal.Title>Lançamento {props.invoiceId} </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
 
                     <Container>
-                        <Alert show={msgSuccess} variant="success">Saved successfully</Alert>
+                        <Alert show={msgSuccess} variant="success">Salvo com sucesso</Alert>
                         <Form onSubmit={handleSubmit}>
 
                             <Row>
                                 <Col>
                                     <Form.Group controlId="Amount">
                                         <Form.Label>Amount: </Form.Label>
-                                        <CurrencyInput className="input_bootstrap" name="amount" required onChange={handleInputChange} value={values.amount} />
+                                        <CurrencyInput decimalSeparator="," thousandSeparator="." className="input_bootstrap" name="amount" required onChange={handleInputChange} value={values.amount} />
                                     </Form.Group>
                                 </Col>
                                 <Col>
@@ -165,17 +188,17 @@ export const ModalInvoice = (props) => {
                                     <Form.Group controlId="account_id">
                                         <Form.Label>Type</Form.Label>
                                         <Form.Control as="select" name="type" required onChange={handleInputChange} value={values.type} >
-                                            <option value='1'>Pay</option>
-                                            <option value='2'>Receive</option>
+                                            <option value='1'>Pagar</option>
+                                            <option value='2'>Receber</option>
                                         </Form.Control>
                                     </Form.Group>
                                 </Col>
                                 <Col xs={8}>
                                     <Form.Group controlId="status">
                                         <Form.Label>Status: </Form.Label><br />
-                                        <Form.Check inline label="Open" type='radio' name='status' id='status_radio1' value='1' onChange={handleInputChange} checked={values.status === "1"} required />
-                                        <Form.Check inline label="Paid" type='radio' name='status' id='status_radio2' value='2' onChange={handleInputChange} checked={values.status === "2"} required />
-                                        <Form.Check inline label="Canceled" type='radio' name='status' id='status_radio3' value='3' onChange={handleInputChange} checked={values.status === "3"} required />
+                                        <Form.Check inline label="Em Aberto" type='radio' name='status' id='status_radio1' value='1' onChange={handleInputChange} checked={values.status === "1"} required />
+                                        <Form.Check inline label="Paga" type='radio' name='status' id='status_radio2' value='2' onChange={handleInputChange} checked={values.status === "2"} required />
+                                        <Form.Check inline label="Cancelada" type='radio' name='status' id='status_radio3' value='3' onChange={handleInputChange} checked={values.status === "3"} required />
 
                                     </Form.Group>
                                 </Col>
@@ -188,7 +211,10 @@ export const ModalInvoice = (props) => {
 
 
                             <Modal.Footer>
-                                <Button variant="dark" type="submit"> Save </Button>
+                                {props.invoiceId &&
+                                    <Button variant="danger" onClick={() => removeItem(props.invoiceId)}> Excluir </Button>
+                                }
+                                <Button variant="dark" type="submit"> Salvar </Button>
                             </Modal.Footer>
 
                         </Form>
@@ -211,7 +237,7 @@ export const AddInvoice = (props) => {
     return (
         <>
             <Button variant="dark" onClick={handleShow}>
-                New
+                Novo
             </Button>
 
             <ModalInvoice show={show} loader={props.loader} handleClose={handleClose} handleShow={handleShow} accounts={props.accounts} companies={props.companies} />

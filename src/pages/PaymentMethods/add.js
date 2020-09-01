@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { Form, Modal, Button, Alert, Container } from 'react-bootstrap';
-import api from "./../../services/api";
+import api from "../../services/api";
 import './styles.css';
 import ButtonEdit from './../../assets/images/edit.png';
 
 
-export const EditCompany = (props) => {
+export const EditPaymentMethod = (props) => {
 
     const [show, setShow] = useState(false);
 
@@ -15,20 +15,20 @@ export const EditCompany = (props) => {
     return (
         <>
             <img src={ButtonEdit} className="button-edit" onClick={handleShow} alt="Edit Invoice" />
-            <ModalCompany show={show} loader={props.loader} companyId={props.companyId} handleClose={handleClose} handleShow={handleShow} />
+            <ModalPaymentMethod show={show} loader={props.loader} PaymentMethodId={props.PaymentMethodId} handleClose={handleClose} handleShow={handleShow} />
 
         </>
     );
 }
 
-export const ModalCompany = (props) => {
+export const ModalPaymentMethod = (props) => {
 
     const [values, setValues] = useState({ name: '' });
     const [msgSuccess, setSuccess] = useState(false);
 
     const loadItem = async () => {
-        const company = await api.get('/companies/' + props.companyId);
-        setValues(company.data);
+        const payment_method = await api.get('/payment_methods/' + props.PaymentMethodId);
+        setValues(payment_method.data);
     }
 
 
@@ -42,12 +42,28 @@ export const ModalCompany = (props) => {
         }
     }
 
+    const saveItem = async () => {
+
+        const { name } = values;
+
+        if (props.PaymentMethodId) {
+            await api.put('/payment_methods/' + props.PaymentMethodId, {
+                name
+            });
+        } else {
+            await api.post('/payment_methods', {
+                name
+            });
+        }
+
+
+    }
 
     const removeItem = async (id) => {
 
         try {
-            if (window.confirm("Você realmente deseja remover esse Cliente/Fornecedor?")) {
-                await api.delete('/companies/' + id);
+            if (window.confirm("Você realmente deseja remover esse método de pagamento?")) {
+                await api.delete('/payment_methods/' + id);
 
                 setSuccess('Removido com sucesso.');
                 setTimeout(e => {
@@ -60,23 +76,6 @@ export const ModalCompany = (props) => {
             }
         } catch (error) {
             console.log(error);
-        }
-
-
-    }
-
-    const saveItem = async () => {
-
-        const { name } = values;
-
-        if (props.companyId) {
-            await api.put('/companies/' + props.companyId, {
-                name
-            });
-        } else {
-            await api.post('/companies', {
-                name
-            });
         }
 
 
@@ -102,7 +101,7 @@ export const ModalCompany = (props) => {
 
     }
 
-    if (props.show && props.companyId && !values.name) {
+    if (props.show && props.PaymentMethodId && !values.name) {
         loadItem();
     }
 
@@ -110,7 +109,7 @@ export const ModalCompany = (props) => {
         <>
             <Modal show={props.show} onHide={props.handleClose} animation={false}>
                 <Modal.Header closeButton>
-                    <Modal.Title>Cliente/Fornecedor {props.companyId} </Modal.Title>
+                    <Modal.Title>Método de Pagamento {props.PaymentMethodId} </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
 
@@ -120,13 +119,13 @@ export const ModalCompany = (props) => {
 
                             <Form.Group controlId="description">
                                 <Form.Label>Nome: </Form.Label>
-                                <Form.Control type="text" name="name" placeholder="" onChange={handleInputChange} value={values.name} required />
+                                <Form.Control type="text" name="name" placeholder="Método de Pagamento" onChange={handleInputChange} value={values.name} required />
                             </Form.Group>
 
 
                             <Modal.Footer>
-                                {props.companyId &&
-                                    <Button variant="danger" onClick={() => removeItem(props.companyId)}> Excluir </Button>
+                                {props.PaymentMethodId &&
+                                    <Button variant="danger" onClick={() => removeItem(props.PaymentMethodId)}> Excluir </Button>
                                 }
                                 <Button variant="dark" type="submit"> Salvar </Button>
                             </Modal.Footer>
@@ -140,7 +139,7 @@ export const ModalCompany = (props) => {
     );
 }
 
-export const AddCompany = (props) => {
+export const AddPaymentMethod = (props) => {
 
 
     const [show, setShow] = useState(false);
@@ -154,10 +153,10 @@ export const AddCompany = (props) => {
                 Novo
             </Button>
 
-            <ModalCompany show={show} loader={props.loader} handleClose={handleClose} handleShow={handleShow} />
+            <ModalPaymentMethod show={show} loader={props.loader} handleClose={handleClose} handleShow={handleShow} />
 
         </>
     );
 }
 
-export default AddCompany;
+export default AddPaymentMethod;

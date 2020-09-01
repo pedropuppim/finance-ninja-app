@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import { Form, Modal, Button, Alert, Container } from 'react-bootstrap';
 import api from "./../../services/api";
 import './styles.css';
-import ButtonEdit from './../../assets/images/edit2.png';
+import ButtonEdit from './../../assets/images/edit.png';
 import CurrencyInput from 'react-currency-input';
+import valueDb from '../../utils/money';
 
 export const EditAccount = (props) => {
 
@@ -45,8 +46,7 @@ export const ModalAccount = (props) => {
     const saveItem = async () => {
 
         var { name, balance } = values;
-
-        balance = balance.replace(',', '');
+        balance = valueDb(balance);
 
         if (props.accountId) {
             await api.put('/accounts/' + props.accountId, {
@@ -60,6 +60,27 @@ export const ModalAccount = (props) => {
             });
         }
 
+
+    }
+
+    const removeItem = async (id) => {
+
+        try {
+            if (window.confirm("Você realmente deseja remover essa Conta?")) {
+                await api.delete('/accounts/' + id);
+
+                setSuccess('Removido com sucesso.');
+                setTimeout(e => {
+                    props.handleClose();
+                    setValues({ name: '' });
+                    setSuccess(false);
+                }, 1500);
+
+                props.loader('reset');
+            }
+        } catch (error) {
+            console.log(error);
+        }
 
     }
 
@@ -91,12 +112,12 @@ export const ModalAccount = (props) => {
         <>
             <Modal show={props.show} onHide={props.handleClose} animation={false}>
                 <Modal.Header closeButton>
-                    <Modal.Title>New Account {props.accountId} </Modal.Title>
+                    <Modal.Title>Nova Conta {props.accountId} </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
 
                     <Container>
-                        <Alert show={msgSuccess} variant="success">Saved successfully</Alert>
+                        <Alert show={msgSuccess} variant="success">Salvo com sucesso</Alert>
                         <Form onSubmit={handleSubmit}>
 
                             <Form.Group controlId="description">
@@ -106,11 +127,14 @@ export const ModalAccount = (props) => {
 
                             <Form.Group controlId="Balance">
                                 <Form.Label>Balance: </Form.Label>
-                                <CurrencyInput className="input_bootstrap" name="balance" required onChange={handleInputChange} value={values.balance} />
+                                <CurrencyInput decimalSeparator="," thousandSeparator="." className="input_bootstrap" name="balance" required onChange={handleInputChange} value={values.balance} />
                             </Form.Group>
 
                             <Modal.Footer>
-                                <Button variant="dark" type="submit"> Save </Button>
+                                {props.accountId &&
+                                    <Button variant="danger" onClick={() => removeItem(props.accountId)}> Excluir </Button>
+                                }
+                                <Button variant="dark" type="submit"> Salvar </Button>
                             </Modal.Footer>
 
                         </Form>
@@ -133,7 +157,7 @@ export const AddAccount = (props) => {
     return (
         <>
             <Button variant="dark" onClick={handleShow}>
-                New
+                Novo
             </Button>
 
             <ModalAccount show={show} loader={props.loader} handleClose={handleClose} handleShow={handleShow} />

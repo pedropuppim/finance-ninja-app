@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { Form, Modal, Button, Alert, Container } from 'react-bootstrap';
-import api from "./../../services/api";
+import api from "../../services/api";
 import './styles.css';
 import ButtonEdit from './../../assets/images/edit.png';
 
 
-export const EditCompany = (props) => {
+export const EditCategory = (props) => {
 
     const [show, setShow] = useState(false);
 
@@ -15,20 +15,20 @@ export const EditCompany = (props) => {
     return (
         <>
             <img src={ButtonEdit} className="button-edit" onClick={handleShow} alt="Edit Invoice" />
-            <ModalCompany show={show} loader={props.loader} companyId={props.companyId} handleClose={handleClose} handleShow={handleShow} />
+            <ModalCategory show={show} loader={props.loader} categoryId={props.categoryId} handleClose={handleClose} handleShow={handleShow} />
 
         </>
     );
 }
 
-export const ModalCompany = (props) => {
+export const ModalCategory = (props) => {
 
     const [values, setValues] = useState({ name: '' });
-    const [msgSuccess, setSuccess] = useState(false);
+    const [msgSuccess, setSuccess] = useState('');
 
     const loadItem = async () => {
-        const company = await api.get('/companies/' + props.companyId);
-        setValues(company.data);
+        const category = await api.get('/categories/' + props.categoryId);
+        setValues(category.data);
     }
 
 
@@ -42,12 +42,11 @@ export const ModalCompany = (props) => {
         }
     }
 
-
-    const removeItem = async (id) => {
+    const removeItem = async (id) =>{
 
         try {
-            if (window.confirm("Você realmente deseja remover esse Cliente/Fornecedor?")) {
-                await api.delete('/companies/' + id);
+            if (window.confirm("Você realmente deseja remover essa categoria?")) {
+                await api.delete('/categories/' + id);
 
                 setSuccess('Removido com sucesso.');
                 setTimeout(e => {
@@ -62,19 +61,19 @@ export const ModalCompany = (props) => {
             console.log(error);
         }
 
-
+  
     }
 
     const saveItem = async () => {
 
         const { name } = values;
 
-        if (props.companyId) {
-            await api.put('/companies/' + props.companyId, {
+        if (props.categoryId) {
+            await api.put('/categories/' + props.categoryId, {
                 name
             });
         } else {
-            await api.post('/companies', {
+            await api.post('/categories', {
                 name
             });
         }
@@ -87,7 +86,7 @@ export const ModalCompany = (props) => {
 
         try {
             await saveItem();
-            setSuccess(true);
+            setSuccess('Salvo com sucesso.');
             setTimeout(e => {
                 props.handleClose();
                 setValues({ name: '' });
@@ -95,14 +94,13 @@ export const ModalCompany = (props) => {
             }, 1500);
             props.loader('reset');
 
-
         } catch (error) {
             console.log(error);
         }
 
     }
 
-    if (props.show && props.companyId && !values.name) {
+    if (props.show && props.categoryId && !values.name) {
         loadItem();
     }
 
@@ -110,23 +108,23 @@ export const ModalCompany = (props) => {
         <>
             <Modal show={props.show} onHide={props.handleClose} animation={false}>
                 <Modal.Header closeButton>
-                    <Modal.Title>Cliente/Fornecedor {props.companyId} </Modal.Title>
+                    <Modal.Title>Categoria {props.categoryId} </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
 
                     <Container>
-                        <Alert show={msgSuccess} variant="success">Salvo com sucesso</Alert>
+                        <Alert show={msgSuccess} variant="success">{msgSuccess}</Alert>
                         <Form onSubmit={handleSubmit}>
 
                             <Form.Group controlId="description">
                                 <Form.Label>Nome: </Form.Label>
-                                <Form.Control type="text" name="name" placeholder="" onChange={handleInputChange} value={values.name} required />
+                                <Form.Control type="text" name="name" placeholder="Nome da categoria" onChange={handleInputChange} value={values.name} required />
                             </Form.Group>
 
 
                             <Modal.Footer>
-                                {props.companyId &&
-                                    <Button variant="danger" onClick={() => removeItem(props.companyId)}> Excluir </Button>
+                                {props.categoryId &&
+                                    <Button variant="danger" onClick={() => removeItem(props.categoryId)}> Excluir </Button>
                                 }
                                 <Button variant="dark" type="submit"> Salvar </Button>
                             </Modal.Footer>
@@ -140,7 +138,7 @@ export const ModalCompany = (props) => {
     );
 }
 
-export const AddCompany = (props) => {
+export const AddCategory = (props) => {
 
 
     const [show, setShow] = useState(false);
@@ -154,10 +152,10 @@ export const AddCompany = (props) => {
                 Novo
             </Button>
 
-            <ModalCompany show={show} loader={props.loader} handleClose={handleClose} handleShow={handleShow} />
+            <ModalCategory show={show} loader={props.loader} handleClose={handleClose} handleShow={handleShow} />
 
         </>
     );
 }
 
-export default AddCompany;
+export default AddCategory;

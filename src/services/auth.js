@@ -19,7 +19,7 @@ export const getExpire = () => {
   return ls?.expire;
 }
 
-export const getLogin = () => {
+export const getLogin =() => {
   const ls = JSON.parse(localStorage.getItem(TOKEN_KEY));
   return ls?.user.name;
 }

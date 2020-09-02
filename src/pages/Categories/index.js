@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect  } from 'react';
 import api from "./../../services/api";
 import Header from "./../../components/Header";
 import './styles.css';
@@ -9,34 +9,35 @@ import AddCategory, { EditCategory } from "./add";
 const moment = require("moment");
 
 
-export default class Categories extends Component {
+export default function Categories() {
+ 
+    const [categories, setCategories] = useState([]);
+    const [loading, setLoading] = useState(true);
 
-    state = {
-        categories: [],
-        loading: true
-    }
+    useEffect(() => {
+        
+        loadCategories();
+        
+    }, []);
 
-    componentDidMount() {
-        this.loadCategories();
-    }
 
-    loadCategories = async () => {
+    async function loadCategories() {
         const response = await api.get("/categories");
-        this.setState({ categories: response.data, loading: false })
+        setCategories(response.data);
+        setLoading(false);
     }
 
-    render() {
         return (
 
             <div>
                 <Header />
                 <div className="container_bill">
-                    {this.state.loading ? (
+                    {loading ? (
                         <Spinner animation="grow" className='spinner' />
                     ) : (
 
                             <div>
-                                <p><AddCategory loader={this.loadCategories} /></p>
+                                <p><AddCategory loader={loadCategories} /></p>
 
                                 <Table striped bordered hover responsive variant="striped bordered hover">
                                     <thead>
@@ -48,9 +49,9 @@ export default class Categories extends Component {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {this.state.categories.map(category => (
+                                        {categories.map(category => (
                                             <tr key={category.id}>
-                                                <td><EditCategory loader={this.loadCategories} categoryId={category.id} /></td>
+                                                <td><EditCategory loader={loadCategories} categoryId={category.id} /></td>
                                                 <td>{category.id}</td>
                                                 <td>{moment(category.created_at).format("DD/MM/YYYY")}</td>
                                                 <td>{category.name}</td>
@@ -66,4 +67,3 @@ export default class Categories extends Component {
 
         );
     }
-}

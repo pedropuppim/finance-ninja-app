@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect  } from 'react';
 import api from "./../../services/api";
 import Header from "./../../components/Header";
 import './styles.css';
@@ -9,62 +9,63 @@ import AddCompany, { EditCompany } from "./add";
 const moment = require("moment");
 
 
-export default class Companies extends Component {
+export default function Companies() {
 
-    state = {
-        companies: [],
-        loading: true
-    }
+    const [companies, setCompanies] = useState([]);
+    const [loading, setLoading] = useState(true);
 
-    componentDidMount() {
-        this.loadCompanies();
-    }
 
-    loadCompanies = async () => {
+    useEffect(() => {
+        
+        loadCompanies();
+        
+        }, []);
+
+    async function loadCompanies() {
         const response = await api.get("/companies");
-        this.setState({ companies: response.data, loading: false })
+        setCompanies(response.data);
+        setLoading(false);
     }
 
 
-    render() {
-        return (
 
-            <div>
-                <Header />
-                <div className="container_bill">
-                    {this.state.loading ? (
-                        <Spinner animation="grow" className='spinner' />
-                    ) : (
+    return (
 
-                            <div>
-                                <p><AddCompany loader={this.loadCompanies} /></p>
+        <div>
+            <Header />
+            <div className="container_bill">
+                {loading ? (
+                    <Spinner animation="grow" className='spinner' />
+                ) : (
 
-                                <Table striped bordered hover responsive variant="striped bordered hover">
-                                    <thead>
-                                        <tr>
-                                            <th></th>
-                                            <th>#</th>
-                                            <th>Data de Criação</th>
-                                            <th>Nome</th>
+                        <div>
+                            <p><AddCompany loader={loadCompanies} /></p>
+
+                            <Table striped bordered hover responsive variant="striped bordered hover">
+                                <thead>
+                                    <tr>
+                                        <th></th>
+                                        <th>#</th>
+                                        <th>Data de Criação</th>
+                                        <th>Nome</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {companies.map(company => (
+                                        <tr key={company.id}>
+                                            <td><EditCompany loader={loadCompanies} companyId={company.id} /></td>
+                                            <td>{company.id}</td>
+                                            <td>{moment(company.created_at).format("DD/MM/YYYY")}</td>
+                                            <td>{company.name}</td>
                                         </tr>
-                                    </thead>
-                                    <tbody>
-                                        {this.state.companies.map(company => (
-                                            <tr key={company.id}>
-                                                <td><EditCompany loader={this.loadCompanies} companyId={company.id} /></td>
-                                                <td>{company.id}</td>
-                                                <td>{moment(company.created_at).format("DD/MM/YYYY")}</td>
-                                                <td>{company.name}</td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </Table>
-                            </div>
-                        )
-                    }
-                </div>
+                                    ))}
+                                </tbody>
+                            </Table>
+                        </div>
+                    )
+                }
             </div>
+        </div>
 
         );
     }
-}

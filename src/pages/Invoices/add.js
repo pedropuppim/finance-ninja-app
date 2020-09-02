@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Form, Modal, Button, Alert, Container, Row, Col } from 'react-bootstrap';
 import api from "./../../services/api";
 import './styles.css';
@@ -17,45 +17,12 @@ export const EditInvoice = (props) => {
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
 
-    const [companies, setCompanies] = useState([]);
-    const [accounts, setAccounts] = useState([]);
-    const [categories, setCategories] = useState([]);
-    const [payment_methods, setPaymentMethods] = useState([]);
-
-    const loadCompanies = async () => {
-        const response = await api.get("/companies");
-        setCompanies(response.data);
-    }
-
-    const loadAccounts = async () => {
-        const response = await api.get("/accounts");
-        setAccounts(response.data);
-    }
-
-    const loadCategories = async () => {
-        const response = await api.get("/categories");
-        setCategories(response.data);
-    }
-
-    const loadPaymentMethods = async () => {
-        const response = await api.get("/payment_methods");
-        setPaymentMethods(response.data);
-    }
-
-    useEffect(() => {
-        loadCompanies();
-        loadAccounts();
-        loadCategories();
-        loadPaymentMethods();
-
-    }, []);
-
 
     return (
         <>
 
             <img src={ButtonEdit} className="button-edit" onClick={handleShow} alt="Edit Invoice" />
-            <ModalInvoice show={show} loader={props.loader} invoiceId={props.invoiceId} handleClose={handleClose} handleShow={handleShow}  />
+            <ModalInvoice show={show} loader={props.loader} invoiceId={props.invoiceId} handleClose={handleClose} handleShow={handleShow}  accounts={props.accounts} companies={props.companies} categories={props.categories} payment_methods={props.payment_methods} />
 
 
         </>
@@ -67,6 +34,8 @@ export const ModalInvoice = (props) => {
     const [values, setValues] = useState({ amount: '', dt_duedate: '', account_id: '', company_id: '', payment_method_id: '', category_id: '' , description: '', status: "1", type: "1" });
     const [dt_duedate, setStartDate] = useState(new Date());
     const [msgSuccess, setSuccess] = useState(false);
+
+
 
     const loadItem = async () => {
         const invoice = await api.get('/invoices/' + props.invoiceId);
@@ -112,7 +81,7 @@ export const ModalInvoice = (props) => {
 
     const saveItem = async () => {
 
-        var { amount, account_id, company_id, description, status, type } = values;
+        var { amount, account_id, company_id, description, status, type, payment_method_id, category_id } = values;
         var dt_duedate_formated = dt_duedate.toISOString().split('T')[0];
 
         
@@ -126,6 +95,8 @@ export const ModalInvoice = (props) => {
                 company_id,
                 status,
                 type,
+                payment_method_id,
+                category_id,
                 description
             });
         } else {
@@ -136,6 +107,8 @@ export const ModalInvoice = (props) => {
                 company_id,
                 status,
                 type,
+                payment_method_id,
+                category_id,
                 description
             });
         }
@@ -198,10 +171,10 @@ export const ModalInvoice = (props) => {
                                     <Form.Group controlId="account_id">
                                         <Form.Label>Conta</Form.Label>
                                         <Form.Control as="select" name="account_id" required onChange={handleInputChange} value={values.account_id} >
-                                            {/* <option value=''>Selecione a Conta</option>
+                                            <option value=''></option>
                                             {props.accounts.map(account => (
                                                 <option key={account.id} value={account.id}>{account.name}</option>
-                                            ))} */}
+                                            ))}
                                         </Form.Control>
                                     </Form.Group>
                                 </Col>
@@ -209,10 +182,10 @@ export const ModalInvoice = (props) => {
                                     <Form.Group controlId="account_id">
                                         <Form.Label>Cliente / Fornecedor</Form.Label>
                                         <Form.Control as="select" name="company_id" required onChange={handleInputChange} value={values.company_id} >
-                                            {/* <option value=''>Selecione o Cliente / Fornecedor</option>
+                                            <option value=''></option>
                                             {props.companies.map(company => (
                                                 <option key={company.id} value={company.id}>{company.name}</option>
-                                            ))} */}
+                                            ))}
                                         </Form.Control>
                                     </Form.Group>
                                 </Col>
@@ -223,21 +196,21 @@ export const ModalInvoice = (props) => {
                                     <Form.Group controlId="category_id">
                                         <Form.Label>Categoria</Form.Label>
                                         <Form.Control as="select" name="category_id" required onChange={handleInputChange} value={values.category_id} >
-                                            <option value=''>Selecione a Categoria</option>
-                                            {/* {props.categories.map(category => (
+                                            <option value=''></option>
+                                            {props.categories.map(category => (
                                                 <option key={category.id} value={category.id}>{category.name}</option>
-                                            ))} */}
+                                            ))}
                                         </Form.Control>
                                     </Form.Group>
                                 </Col>
                                 <Col>
                                     <Form.Group controlId="payment_method_id">
                                         <Form.Label>Forma de Pagamento</Form.Label>
-                                        <Form.Control as="select" name="company_id" required onChange={handleInputChange} value={values.payment_method_id} >
-                                            <option value=''>Selecione a Forma de Pagamento</option>
-                                            {/* {props.payment_methods.map(payment_method => (
+                                        <Form.Control as="select" name="payment_method_id" required onChange={handleInputChange} value={values.payment_method_id} >
+                                            <option value=''></option>
+                                            {props.payment_methods.map(payment_method => (
                                                 <option key={payment_method.id} value={payment_method.id}>{payment_method.name}</option>
-                                            ))} */}
+                                            ))}
                                         </Form.Control>
                                     </Form.Group>
                                 </Col>
@@ -300,7 +273,7 @@ export const AddInvoice = (props) => {
                 Novo
             </Button>
 
-            <ModalInvoice show={show} loader={props.loader} handleClose={handleClose} handleShow={handleShow} accounts={props.accounts} companies={props.companies} />
+            <ModalInvoice show={show} loader={props.loader} handleClose={handleClose} handleShow={handleShow}  accounts={props.accounts} companies={props.companies} categories={props.categories} payment_methods={props.payment_methods}  />
 
         </>
     );

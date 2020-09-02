@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect } from 'react';
 import api from "../../services/api";
 import Header from "../../components/Header";
 import './styles.css';
@@ -8,70 +8,100 @@ import AddInvoice, { EditInvoice } from "./add";
 
 const moment = require("moment");
 
-export default class Invoices extends Component {
+export default function Invoices() {
 
-    state = {
-        invoices: [],
-        accounts: [],
-        categories: [],
-        payment_methods: [],
-        companies: [],
-        pagination: [],
-        loading: true,
-        loading_table: false
+    const [invoices, setInvoices] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [pages, setPages] = useState([]);
+    const [loading_table, setLoadingTable] = useState(false);
+    const [page, setPage] = useState(1);
+    const [lastPage, setLastPage] = useState(1);
+
+    const [companies, setCompanies] = useState([]);
+    const [accounts, setAccounts] = useState([]);
+    const [categories, setCategories] = useState([]);
+    const [payment_methods, setPaymentMethods] = useState([]);
+
+
+    useEffect(() => {
+        
+        loadInvoices();
+        loadCompanies();
+        loadAccounts();
+        loadCategories();
+        loadpaymentMethods();
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    async function loadCompanies() {
+        const response = await api.get("/companies");
+        setCompanies(response.data);
+        setLoading(false);
     }
 
-    componentDidMount() {
-        this.loadInvoices();
+    async function loadAccounts() {
+
+        const response = await api.get("/accounts");
+        setAccounts(response.data);
+        setLoading(false);
+    }
+    
+    async function loadCategories() {
+        const response = await api.get("/categories");
+        setCategories(response.data);
+        setLoading(false);
     }
 
-    loadInvoices = async (resetPage = null) => {
+    async function loadpaymentMethods() {
+        const response = await api.get("/payment_methods");
+        setPaymentMethods(response.data);
+        setLoading(false);
+    }
 
-        var currentPage = (resetPage) ? 1 : this.state.pagination.currentPage || 1;
 
+    const loadInvoices = async (resetPage = null) => {
+
+        var currentPage = (resetPage) ? 1 : pages.currentPage || 1;
         const response = await api.get("/invoices?page=" + currentPage)
-        this.setState({ invoices: response.data.data, pagination: response.data.pagination, loading: false, loading_table: false })
+        setInvoices(response.data.data);
+
+        setLastPage(response.data.pagination.lastPage);
+        setPage(currentPage);
+
+        setPages(response.data.pagination);
+        setLoading(false);
+        setLoadingTable(false);
     }
 
-    pagination = async (ptype) => {
-        var pagination = this.state.pagination;
+    // eslint-disable-next-line no-unused-vars
+    const paginate = async (ptype) => {
 
         if (ptype === "previous") {
-            if (pagination.currentPage > 1) {
-                this.setState({ loading_table: true });
-                pagination.currentPage = parseInt(pagination.currentPage) - 1;
+            if (pages.currentPage > 1) {
+                setLoadingTable(true);
+                pages.currentPage = parseInt(pages.currentPage) - 1;
             } else {
                 return;
             }
         }
 
         if (ptype === "next") {
-            if (pagination.currentPage < pagination.lastPage) {
-                this.setState({ loading_table: true });
-                pagination.currentPage = parseInt(pagination.currentPage) + 1;
+            if (pages.currentPage < pages.lastPage) {
+                setLoadingTable(true);
+                pages.currentPage = parseInt(pages.currentPage) + 1;
             } else {
                 return;
             }
         }
 
-        this.setState({ pagination: pagination })
-        this.loadInvoices();
+        setPages(pages);
+        setPage(pages.currentPage);
+        setLastPage(pages.lastPage);
+        loadInvoices();
 
     }
 
-
-    render() {
-
-        const self = this.state;
-
-        const page = parseInt(self.pagination.currentPage) || 1;
-        const lastPage = parseInt(self.pagination.lastPage);
-
-        let spinner_table = "";
-
-        if (this.state.loading_table) {
-            spinner_table = <Spinner animation="border" variant="light" className='spinner_table' />
-        }
 
         return (
 
@@ -80,16 +110,18 @@ export default class Invoices extends Component {
 
 
                 <div className="container_bill">
+                    
+                    {loading_table &&
+                    <Spinner animation="border" className='spinner_table' />
+                    }
 
-                    {spinner_table}
-
-                    {this.state.loading ? (
+                    {loading ? (
                         <Spinner animation="grow" className='spinner' />
                     ) : (
 
                             <div>
                                 <p>
-                                    <AddInvoice loader={this.loadInvoices} />
+                                    <AddInvoice loader={loadInvoices} companies={companies} accounts={accounts} categories={categories} payment_methods={payment_methods} />
                                 </p>
 
                                 <Table striped bordered hover responsive variant="striped bordered hover">
@@ -106,9 +138,9 @@ export default class Invoices extends Component {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {this.state.invoices.map(invoice => (
+                                        {invoices.map(invoice => (
                                             <tr key={invoice.id}>
-                                                <td><EditInvoice loader={this.loadInvoices} invoiceId={invoice.id} /></td>
+                                                <td><EditInvoice loader={loadInvoices} invoiceId={invoice.id} companies={companies} accounts={accounts} categories={categories} payment_methods={payment_methods} /></td>
                                                 <td>{invoice.id}</td>
                                                 <td>{moment(invoice.dt_duedate).format("DD/MM/YY")}</td>
                                                 <td>R$ {invoice.amount.toFixed(2)}</td>
@@ -120,8 +152,8 @@ export default class Invoices extends Component {
                                         ))}
                                     </tbody>
                                 </Table>
-                                <Button variant="dark" disabled={page === 1} onClick={() => this.pagination('previous')}>Anterior</Button>
-                                <Button variant="dark" disabled={page === lastPage} onClick={() => this.pagination('next')} style={{ float: "right" }}>Próxima</Button>
+                                <Button variant="dark" disabled={page === 1} onClick={() => paginate('previous')}>Anterior</Button>
+                                <Button variant="dark" disabled={page === lastPage} onClick={() => paginate('next')} style={{ float: "right" }}>Próxima</Button>
                             </div>
 
 
@@ -135,4 +167,3 @@ export default class Invoices extends Component {
 
         );
     }
-}

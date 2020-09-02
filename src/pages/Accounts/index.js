@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect  } from 'react';
 import api from "./../../services/api";
 import Header from "./../../components/Header";
 import './styles.css';
@@ -7,36 +7,35 @@ import AddAccount, { EditAccount } from "./add";
 
 const moment = require("moment");
 
+export default function Accounts() {
 
-export default class Accounts extends Component {
+    const [accounts, setAccounts] = useState([]);
+    const [loading, setLoading] = useState(true);
 
-    state = {
-        accounts: [],
-        loading: true
-    }
 
-    componentDidMount() {
-        this.loadAccounts();
-    }
+    useEffect(() => {
+        
+        loadAccounts();
+        
+     }, []);
 
-    loadAccounts = async () => {
+    async function loadAccounts() {
+
         const response = await api.get("/accounts");
-        this.setState({ accounts: response.data, loading: false })
-
+        setAccounts(response.data);
+        setLoading(false);
     }
 
-
-    render() {
         return (
 
             <div>
                 <Header />
                 <div className="container_bill">
-                    {this.state.loading ? (
+                    {loading ? (
                         <Spinner animation="grow" className='spinner' />
                     ) : (
                             <div>
-                                <p><AddAccount loader={this.loadAccounts} /></p>
+                                <p><AddAccount loader={loadAccounts} /></p>
                                 <Table striped bordered hover responsive variant="striped bordered hover">
                                     <thead>
                                         <tr>
@@ -48,9 +47,9 @@ export default class Accounts extends Component {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {this.state.accounts.map(account => (
+                                        {accounts.map(account => (
                                             <tr key={account.id}>
-                                                <td><EditAccount loader={this.loadAccounts} accountId={account.id} /></td>
+                                                <td><EditAccount loader={loadAccounts} accountId={account.id} /></td>
                                                 <td>{account.id}</td>
                                                 <td>{moment(account.created_at).format("DD/MM/YYYY")}</td>
                                                 <td>{account.name}</td>
@@ -67,4 +66,3 @@ export default class Accounts extends Component {
 
         );
     }
-}

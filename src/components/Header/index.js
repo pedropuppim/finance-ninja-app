@@ -10,9 +10,7 @@ const name = getLogin();
 
 
 export const logoutHeader = () => {
-    
     logout();
-  
 };
 
 
@@ -29,7 +27,7 @@ class Header extends Component {
                     </h1>
                     <div className="main-nav">
                         {name}<br />
-                        <Link to="/" onClick={() => logoutHeader}><span>Sair</span></Link>
+                        <Link to="/" onClick={() => logoutHeader()}><span>Sair</span></Link>
                     </div>
 
                     <nav className="main-nav">

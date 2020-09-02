@@ -140,6 +140,8 @@ export const ModalInvoice = (props) => {
         loadItem();
     }
 
+
+
     return (
         <>
             <Modal show={props.show} onHide={props.handleClose} animation={false}>
@@ -162,7 +164,7 @@ export const ModalInvoice = (props) => {
                                 <Col>
                                     <Form.Group controlId="dt_duedate">
                                         <Form.Label>Vencimento: </Form.Label>
-                                        <DatePicker className="input_bootstrap" id="dt_duedate" name="dt_duedate" dateFormat="MM/dd/yyyy" required selected={dt_duedate} onChange={date => setStartDate(date)} />
+                                        <DatePicker  className="input_bootstrap" id="dt_duedate" name="dt_duedate" dateFormat="dd/MM/yyyy" required selected={dt_duedate} onChange={date => setStartDate(date)} />
                                     </Form.Group>
                                 </Col>
                             </Row>
@@ -197,9 +199,19 @@ export const ModalInvoice = (props) => {
                                         <Form.Label>Categoria</Form.Label>
                                         <Form.Control as="select" name="category_id" required onChange={handleInputChange} value={values.category_id} >
                                             <option value=''></option>
-                                            {props.categories.map(category => (
-                                                <option key={category.id} value={category.id}>{category.name}</option>
-                                            ))}
+
+                                            {props.categories.map(category => {
+                                                if (category.type === values.type) {
+                                                    if (category.id === values.category_id){
+                                                        return <option key={category.id} selected value={category.id}>{category.name}</option>;
+                                                    }
+                                                    return <option key={category.id} value={category.id}>{category.name}</option>;
+                                                    
+                                                }
+                                                return null;
+                                                
+                                            })}
+
                                         </Form.Control>
                                     </Form.Group>
                                 </Col>

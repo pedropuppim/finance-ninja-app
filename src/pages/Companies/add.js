@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Form, Modal, Button, Alert, Container } from 'react-bootstrap';
+import { Form, Modal, Button, Alert, Container, Row, Col } from 'react-bootstrap';
 import api from "./../../services/api";
 import './styles.css';
 import ButtonEdit from './../../assets/images/edit.png';
@@ -67,15 +67,15 @@ export const ModalCompany = (props) => {
 
     const saveItem = async () => {
 
-        const { name } = values;
+        const { name, tel_number, zip, street, number,complement, neighborhood, city, state } = values;
 
         if (props.companyId) {
             await api.put('/companies/' + props.companyId, {
-                name
+                name, tel_number, zip, street, number,complement, neighborhood, city, state
             });
         } else {
             await api.post('/companies', {
-                name
+                name, tel_number, zip, street, number,complement, neighborhood, city, state
             });
         }
 
@@ -118,11 +118,80 @@ export const ModalCompany = (props) => {
                         <Alert show={msgSuccess} variant="success">Salvo com sucesso</Alert>
                         <Form onSubmit={handleSubmit}>
 
-                            <Form.Group controlId="description">
-                                <Form.Label>Nome: </Form.Label>
-                                <Form.Control type="text" name="name" placeholder="" onChange={handleInputChange} value={values.name} required />
-                            </Form.Group>
 
+                        <Row>
+                            <Col xs={7}>
+                                <Form.Group controlId="name">
+                                    <Form.Label>Nome: </Form.Label>
+                                    <Form.Control type="text" name="name" placeholder="" onChange={handleInputChange} value={values.name} required />
+                                </Form.Group>
+
+                            </Col>
+                            <Col>
+                                <Form.Group controlId="number">
+                                    <Form.Label>Telefone: </Form.Label>
+                                    <Form.Control type="text" name="tel_number" maxLength="12" onChange={handleInputChange} value={values.tel_number} required />
+                                </Form.Group>
+                            </Col>
+                        </Row>
+
+                        <Row>
+                            <Col>
+                                <Form.Group controlId="zip">
+                                    <Form.Label>Cep: </Form.Label>
+                                    <Form.Control type="text" name="zip" placeholder="" onChange={handleInputChange} value={values.zip} required />
+                                </Form.Group>
+
+                            </Col>
+                            <Col xs={8}>
+                                <Form.Group controlId="street">
+                                    <Form.Label>Rua: </Form.Label>
+                                    <Form.Control type="text" name="street" onChange={handleInputChange} value={values.street} required />
+                                </Form.Group>
+                            </Col>
+        
+                        </Row>
+
+                        <Row>
+
+                            <Col xs={3}>
+                                <Form.Group controlId="complement">
+                                    <Form.Label>Numero: </Form.Label>
+                                    <Form.Control type="text" name="complement" onChange={handleInputChange} value={values.complement} required />
+                                </Form.Group>
+                            </Col>
+
+                            <Col>
+                                <Form.Group controlId="number">
+                                    <Form.Label>Complemento: </Form.Label>
+                                    <Form.Control type="text" name="number" onChange={handleInputChange} value={values.number} required />
+                                </Form.Group>
+                            </Col>
+
+                            <Col>
+                                <Form.Group controlId="neighborhood">
+                                    <Form.Label>Bairro: </Form.Label>
+                                    <Form.Control type="text" name="neighborhood" onChange={handleInputChange} value={values.neighborhood} required />
+                                </Form.Group>
+                            </Col>
+                        </Row>
+
+                        <Row>
+                            <Col>
+                                <Form.Group controlId="city">
+                                    <Form.Label>Cidade: </Form.Label>
+                                    <Form.Control type="text" name="city" onChange={handleInputChange} value={values.city} required />
+                                </Form.Group>
+                            </Col>
+
+                            <Col xs={3}>
+                                <Form.Group controlId="state">
+                                    <Form.Label>Estado: </Form.Label>
+                                    <Form.Control type="text" name="state" maxLength="2" onChange={handleInputChange} value={values.state} required />
+                                </Form.Group>
+                            </Col>
+    
+                        </Row>
 
                             <Modal.Footer>
                                 {props.companyId &&

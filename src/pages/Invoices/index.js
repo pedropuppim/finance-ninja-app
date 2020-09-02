@@ -5,6 +5,7 @@ import './styles.css';
 import { Table, Badge, Spinner, Button } from 'react-bootstrap';
 
 import AddInvoice, { EditInvoice } from "./add";
+import Filters from "./filters";
 
 const moment = require("moment");
 
@@ -21,6 +22,7 @@ export default function Invoices() {
     const [accounts, setAccounts] = useState([]);
     const [categories, setCategories] = useState([]);
     const [payment_methods, setPaymentMethods] = useState([]);
+    const [filters, setFilters] = useState('');
 
 
     useEffect(() => {
@@ -60,10 +62,17 @@ export default function Invoices() {
     }
 
 
-    const loadInvoices = async (resetPage = null) => {
+    const loadInvoices = async (resetPage = null, string_filters = null) => {
+
+        if (string_filters){
+            setLoadingTable(true);
+            setFilters(string_filters);
+        } else {
+            string_filters = filters;
+        }
 
         var currentPage = (resetPage) ? 1 : pages.currentPage || 1;
-        const response = await api.get("/invoices?page=" + currentPage)
+        const response = await api.get("/invoices?page=" + currentPage + string_filters)
         setInvoices(response.data.data);
 
         setLastPage(response.data.pagination.lastPage);
@@ -74,7 +83,6 @@ export default function Invoices() {
         setLoadingTable(false);
     }
 
-    // eslint-disable-next-line no-unused-vars
     const paginate = async (ptype) => {
 
         if (ptype === "previous") {
@@ -110,6 +118,9 @@ export default function Invoices() {
 
 
                 <div className="container_bill">
+
+                    <Filters loadInvoices={loadInvoices} filters={filters} setFilters={setFilters} />
+                    <br />
                     
                     {loading_table &&
                     <Spinner animation="border" className='spinner_table' />
@@ -129,11 +140,11 @@ export default function Invoices() {
                                         <tr>
                                             <th></th>
                                             <th>#</th>
-                                            <th>Due Date</th>
-                                            <th>Amount</th>
-                                            <th>Company</th>
-                                            <th>Account</th>
-                                            <th>Type</th>
+                                            <th>Vencimento</th>
+                                            <th>Valor</th>
+                                            <th>Cliente/Fornecedor</th>
+                                            <th>Conta</th>
+                                            <th>Tipo</th>
                                             <th>Status</th>
                                         </tr>
                                     </thead>

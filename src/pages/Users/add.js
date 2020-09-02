@@ -30,7 +30,7 @@ export const ModalUser = (props) => {
 
     const loadItem = async () => {
         const user = await api.get('/users/' + props.userId);
-        setValues(user.data);
+        setValues({...user.data, password: '', password2: ''});
     }
 
 
@@ -146,7 +146,7 @@ export const ModalUser = (props) => {
                 <Modal.Body>
 
                     <Container>
-                        <Alert show={msgSuccess} variant="success">{msgSuccess}</Alert>
+                        <Alert show={Boolean(msgSuccess)} variant="success">{msgSuccess}</Alert>
                         <Form onSubmit={handleSubmit}>
 
                             <Form.Group controlId="name">
@@ -159,14 +159,14 @@ export const ModalUser = (props) => {
                                 <Form.Control type="text" onBlur={() => verifyEmail()} required autoComplete="new-email" name="email"  onChange={handleInputChange} value={values.email}  />
                             </Form.Group>
 
-                            <Alert show={validEmail} variant='danger'>E-mail já está em utilização</Alert>
+                            <Alert show={Boolean(validEmail)} variant='danger'>E-mail já está em utilização</Alert>
 
 
                             <Form.Row>
                                 <Col>
                                     <Form.Group controlId="password">
                                         <Form.Label>Senha: </Form.Label>
-                                            <Form.Control required={!props.userId} autoComplete="new-password" type="password"  name="password"  onChange={handleInputChange} value={values.password} />
+                                            <Form.Control required={!props.userId} autoComplete="off" type="password"  name="password"  onChange={handleInputChange} value={values.password} />
                                     </Form.Group>
                                 </Col>
 
@@ -179,7 +179,7 @@ export const ModalUser = (props) => {
                                 </Col>
                             </Form.Row>
 
-                            <Alert show={validPassword} variant='danger'>As senhas não conferem</Alert>
+                            <Alert show={Boolean(validPassword)} variant='danger'>As senhas não conferem</Alert>
 
                             <Form.Group controlId="admin">
                             <Form.Label>Tipo:</Form.Label>

@@ -46,6 +46,7 @@ export default function Categories() {
                                             <th>#</th>
                                             <th>Data da Criação</th>
                                             <th>Nome</th>
+                                            <th>Tipo</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -55,6 +56,7 @@ export default function Categories() {
                                                 <td>{category.id}</td>
                                                 <td>{moment(category.created_at).format("DD/MM/YYYY")}</td>
                                                 <td>{category.name}</td>
+                                                <td>{category.type === "1" ? "Pagar" : "Receber"}</td>
                                             </tr>
                                         ))}
                                     </tbody>

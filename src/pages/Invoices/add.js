@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Form, Modal, Button, Alert, Container, Row, Col } from 'react-bootstrap';
 import api from "./../../services/api";
 import './styles.css';
@@ -9,6 +9,7 @@ import valueDb from '../../utils/money';
 
 import "react-datepicker/dist/react-datepicker.css";
 
+
 export const EditInvoice = (props) => {
 
     const [show, setShow] = useState(false);
@@ -16,11 +17,45 @@ export const EditInvoice = (props) => {
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
 
+    const [companies, setCompanies] = useState([]);
+    const [accounts, setAccounts] = useState([]);
+    const [categories, setCategories] = useState([]);
+    const [payment_methods, setPaymentMethods] = useState([]);
+
+    const loadCompanies = async () => {
+        const response = await api.get("/companies");
+        setCompanies(response.data);
+    }
+
+    const loadAccounts = async () => {
+        const response = await api.get("/accounts");
+        setAccounts(response.data);
+    }
+
+    const loadCategories = async () => {
+        const response = await api.get("/categories");
+        setCategories(response.data);
+    }
+
+    const loadPaymentMethods = async () => {
+        const response = await api.get("/payment_methods");
+        setPaymentMethods(response.data);
+    }
+
+    useEffect(() => {
+        loadCompanies();
+        loadAccounts();
+        loadCategories();
+        loadPaymentMethods();
+
+    }, []);
+
+
     return (
         <>
 
             <img src={ButtonEdit} className="button-edit" onClick={handleShow} alt="Edit Invoice" />
-            <ModalInvoice show={show} loader={props.loader} invoiceId={props.invoiceId} handleClose={handleClose} handleShow={handleShow} accounts={props.accounts} companies={props.companies} />
+            <ModalInvoice show={show} loader={props.loader} invoiceId={props.invoiceId} handleClose={handleClose} handleShow={handleShow}  />
 
 
         </>
@@ -29,7 +64,7 @@ export const EditInvoice = (props) => {
 
 export const ModalInvoice = (props) => {
 
-    const [values, setValues] = useState({ amount: '', dt_duedate: '', account_id: '', company_id: '', description: '', status: "1", type: "1" });
+    const [values, setValues] = useState({ amount: '', dt_duedate: '', account_id: '', company_id: '', payment_method_id: '', category_id: '' , description: '', status: "1", type: "1" });
     const [dt_duedate, setStartDate] = useState(new Date());
     const [msgSuccess, setSuccess] = useState(false);
 
@@ -116,7 +151,7 @@ export const ModalInvoice = (props) => {
             setSuccess(true);
             setTimeout(e => {
                 props.handleClose();
-                setValues({ amount: '', dt_duedate: '', account_id: '', company_id: '', description: '', status: "1", type: '1' });
+                setValues({ amount: '', dt_duedate: '', account_id: '', company_id: '', category_id: '', payment_method_id:'', description: '', status: "1", type: '1' });
                 setSuccess(false);
             }, 1500);
             props.loader('reset');
@@ -147,13 +182,13 @@ export const ModalInvoice = (props) => {
                             <Row>
                                 <Col>
                                     <Form.Group controlId="Amount">
-                                        <Form.Label>Amount: </Form.Label>
+                                        <Form.Label>Valor: </Form.Label>
                                         <CurrencyInput decimalSeparator="," thousandSeparator="." className="input_bootstrap" name="amount" required onChange={handleInputChange} value={values.amount} />
                                     </Form.Group>
                                 </Col>
                                 <Col>
                                     <Form.Group controlId="dt_duedate">
-                                        <Form.Label>Due Date: </Form.Label>
+                                        <Form.Label>Vencimento: </Form.Label>
                                         <DatePicker className="input_bootstrap" id="dt_duedate" name="dt_duedate" dateFormat="MM/dd/yyyy" required selected={dt_duedate} onChange={date => setStartDate(date)} />
                                     </Form.Group>
                                 </Col>
@@ -161,23 +196,48 @@ export const ModalInvoice = (props) => {
                             <Row>
                                 <Col>
                                     <Form.Group controlId="account_id">
-                                        <Form.Label>Account</Form.Label>
+                                        <Form.Label>Conta</Form.Label>
                                         <Form.Control as="select" name="account_id" required onChange={handleInputChange} value={values.account_id} >
-                                            <option value=''>Select Account</option>
+                                            {/* <option value=''>Selecione a Conta</option>
                                             {props.accounts.map(account => (
                                                 <option key={account.id} value={account.id}>{account.name}</option>
-                                            ))}
+                                            ))} */}
                                         </Form.Control>
                                     </Form.Group>
                                 </Col>
                                 <Col>
                                     <Form.Group controlId="account_id">
-                                        <Form.Label>Company</Form.Label>
+                                        <Form.Label>Cliente / Fornecedor</Form.Label>
                                         <Form.Control as="select" name="company_id" required onChange={handleInputChange} value={values.company_id} >
-                                            <option value=''>Select Company</option>
+                                            {/* <option value=''>Selecione o Cliente / Fornecedor</option>
                                             {props.companies.map(company => (
                                                 <option key={company.id} value={company.id}>{company.name}</option>
-                                            ))}
+                                            ))} */}
+                                        </Form.Control>
+                                    </Form.Group>
+                                </Col>
+                            </Row>
+
+                            <Row>
+                                <Col>
+                                    <Form.Group controlId="category_id">
+                                        <Form.Label>Categoria</Form.Label>
+                                        <Form.Control as="select" name="category_id" required onChange={handleInputChange} value={values.category_id} >
+                                            <option value=''>Selecione a Categoria</option>
+                                            {/* {props.categories.map(category => (
+                                                <option key={category.id} value={category.id}>{category.name}</option>
+                                            ))} */}
+                                        </Form.Control>
+                                    </Form.Group>
+                                </Col>
+                                <Col>
+                                    <Form.Group controlId="payment_method_id">
+                                        <Form.Label>Forma de Pagamento</Form.Label>
+                                        <Form.Control as="select" name="company_id" required onChange={handleInputChange} value={values.payment_method_id} >
+                                            <option value=''>Selecione a Forma de Pagamento</option>
+                                            {/* {props.payment_methods.map(payment_method => (
+                                                <option key={payment_method.id} value={payment_method.id}>{payment_method.name}</option>
+                                            ))} */}
                                         </Form.Control>
                                     </Form.Group>
                                 </Col>

@@ -13,6 +13,8 @@ export default class Invoices extends Component {
     state = {
         invoices: [],
         accounts: [],
+        categories: [],
+        payment_methods: [],
         companies: [],
         pagination: [],
         loading: true,
@@ -21,9 +23,6 @@ export default class Invoices extends Component {
 
     componentDidMount() {
         this.loadInvoices();
-        this.loadCompanies();
-        this.loadAccounts();
-
     }
 
     loadInvoices = async (resetPage = null) => {
@@ -32,18 +31,6 @@ export default class Invoices extends Component {
 
         const response = await api.get("/invoices?page=" + currentPage)
         this.setState({ invoices: response.data.data, pagination: response.data.pagination, loading: false, loading_table: false })
-    }
-
-    loadCompanies = async () => {
-
-        const response = await api.get("/companies");
-        this.setState({ companies: response.data });
-
-    }
-
-    loadAccounts = async () => {
-        const response = await api.get("/accounts");
-        this.setState({ accounts: response.data });
     }
 
     pagination = async (ptype) => {
@@ -102,7 +89,7 @@ export default class Invoices extends Component {
 
                             <div>
                                 <p>
-                                    <AddInvoice loader={this.loadInvoices} accounts={self.accounts} companies={self.companies} />
+                                    <AddInvoice loader={this.loadInvoices} />
                                 </p>
 
                                 <Table striped bordered hover responsive variant="striped bordered hover">
@@ -121,7 +108,7 @@ export default class Invoices extends Component {
                                     <tbody>
                                         {this.state.invoices.map(invoice => (
                                             <tr key={invoice.id}>
-                                                <td><EditInvoice loader={this.loadInvoices} accounts={self.accounts} companies={self.companies} invoiceId={invoice.id} /></td>
+                                                <td><EditInvoice loader={this.loadInvoices} invoiceId={invoice.id} /></td>
                                                 <td>{invoice.id}</td>
                                                 <td>{moment(invoice.dt_duedate).format("DD/MM/YY")}</td>
                                                 <td>R$ {invoice.amount.toFixed(2)}</td>

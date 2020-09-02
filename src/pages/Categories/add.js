@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Form, Modal, Button, Alert, Container } from 'react-bootstrap';
+import { Form, Modal, Button, Alert, Container, Row, Col } from 'react-bootstrap';
 import api from "../../services/api";
 import './styles.css';
 import ButtonEdit from './../../assets/images/edit.png';
@@ -66,15 +66,15 @@ export const ModalCategory = (props) => {
 
     const saveItem = async () => {
 
-        const { name } = values;
+        const { name, type } = values;
 
         if (props.categoryId) {
             await api.put('/categories/' + props.categoryId, {
-                name
+                name, type 
             });
         } else {
             await api.post('/categories', {
-                name
+                name, type 
             });
         }
 
@@ -116,10 +116,24 @@ export const ModalCategory = (props) => {
                         <Alert show={msgSuccess} variant="success">{msgSuccess}</Alert>
                         <Form onSubmit={handleSubmit}>
 
-                            <Form.Group controlId="description">
-                                <Form.Label>Nome: </Form.Label>
-                                <Form.Control type="text" name="name" placeholder="Nome da categoria" onChange={handleInputChange} value={values.name} required />
-                            </Form.Group>
+                        <Row>
+                                <Col>
+                                    <Form.Group controlId="description">
+                                        <Form.Label>Nome: </Form.Label>
+                                        <Form.Control type="text" name="name" placeholder="Nome da categoria" onChange={handleInputChange} value={values.name} required />
+                                    </Form.Group>
+                                </Col>
+                                <Col xs={4}>
+                                    <Form.Group controlId="type">
+                                        <Form.Label>Tipo</Form.Label>
+                                        <Form.Control as="select" name="type" required onChange={handleInputChange} value={values.type} >
+                                            <option value='1'>Pagar</option>
+                                            <option value='2'>Receber</option>
+                                        </Form.Control>
+                                    </Form.Group>
+                                </Col>
+                            </Row>
+
 
 
                             <Modal.Footer>

@@ -11,12 +11,32 @@ import Logoff from './pages/Logoff';
 import Categories from './pages/Categories';
 import PaymentMethods from './pages/PaymentMethods';
 import Users from './pages/Users';
+import Dashboard from './pages/Dashboard';
+
+
+import {getUser} from './services/auth'
+
+
+const user = getUser();
 
 const PrivateRoute = ({ component: Component, ...rest }) => (
   <Route
     {...rest}
     render={props =>
       isAuthenticated() ? (
+        <Component {...props} />
+      ) : (
+          <Redirect to={{ pathname: "/login", state: { from: props.location } }} />
+        )
+    }
+  />
+);
+
+const AdminRoute = ({ component: Component, ...rest }) => (
+  <Route
+    {...rest}
+    render={props =>
+      user.admin === '1' ? (
         <Component {...props} />
       ) : (
           <Redirect to={{ pathname: "/login", state: { from: props.location } }} />
@@ -32,11 +52,12 @@ const Routes = () => (
   <BrowserRouter>
     <Switch>
       <PrivateRoute path="/companies" component={Companies} />
-      <PrivateRoute path="/users" component={Users} />
-      <PrivateRoute path="/accounts" component={Accounts} />
+      <AdminRoute path="/users" component={Users} />
+      <AdminRoute path="/dashboard" component={Dashboard} />
+      <AdminRoute path="/accounts" component={Accounts} />
       <PrivateRoute path="/invoices" component={Invoices} />
-      <PrivateRoute path="/categories" component={Categories} />
-      <PrivateRoute path="/payment_methods" component={PaymentMethods} />
+      <AdminRoute path="/categories" component={Categories} />
+      <AdminRoute path="/payment_methods" component={PaymentMethods} />
       <Route path="/login" component={Login} />
       <PrivateRoute exact path="/" component={Invoices} />
       <PrivateRoute exact path="/logoff" component={Logoff} />

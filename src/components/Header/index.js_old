@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { Component } from 'react';
 import { Link } from "react-router-dom";
 import './styles.css';
 
@@ -14,9 +14,10 @@ const logoutHeader = () => {
 };
 
 
-export default function Header() {
-    return (
-<header className="main-header">
+class Header extends Component {
+    render() {
+        return (
+            <header className="main-header">
                 <div className="container">
                     
                     <h1 className="mh-logo">
@@ -90,5 +91,8 @@ export default function Header() {
                     </nav>
                 </div>
             </header>
-    )
+        );
+    }
 }
+
+export default Header;

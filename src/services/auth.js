@@ -8,7 +8,6 @@ export const isAuthenticated = () => {
   return ls?.token ? true : false;
 }
 
-
 export const getToken = () => {
   const ls = JSON.parse(localStorage.getItem(TOKEN_KEY));
   return ls?.token;
@@ -19,9 +18,9 @@ export const getExpire = () => {
   return ls?.expire;
 }
 
-export const getLogin =() => {
+export const getUser = () => {
   const ls = JSON.parse(localStorage.getItem(TOKEN_KEY));
-  return ls?.user.name;
+  return ls?.user
 }
 
 export const login = data => {

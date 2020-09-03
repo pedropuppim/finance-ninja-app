@@ -38,7 +38,14 @@ export default function Invoices() {
 
     async function loadCompanies() {
         const response = await api.get("/companies");
+
+        // const companies = response.data.map(function(v) {
+        //     return {value: v.id, label: v.id+' - '+v.name}
+        // });
+
         setCompanies(response.data);
+
+        
         setLoading(false);
     }
 

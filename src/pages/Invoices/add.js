@@ -6,8 +6,13 @@ import DatePicker from "react-datepicker";
 import ButtonEdit from './../../assets/images/edit.png';
 import CurrencyInput from 'react-currency-input';
 import valueDb from '../../utils/money';
-
+import { getUser }  from "./../../services/auth"
+import Select from 'react-select'
 import "react-datepicker/dist/react-datepicker.css";
+
+
+
+const user = getUser();
 
 
 export const EditInvoice = (props) => {
@@ -47,15 +52,32 @@ export const ModalInvoice = (props) => {
     }
 
 
+    const handleSelectChange = (e,p) => {
+        try {
+
+            const name = p.name;
+            const value = e.id;
+            setValues({ ...values, [name]: value });
+
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
     const handleInputChange = (e, p, c) => {
 
         try {
+
+
+            console.log(e.target);
+
             const { name, value } = e.target ? e.target : c.target;
             setValues({ ...values, [name]: value });
         } catch (error) {
             console.log(error);
         }
     }
+
 
     const removeItem = async (id) => {
 
@@ -84,7 +106,7 @@ export const ModalInvoice = (props) => {
         var { amount, account_id, company_id, description, status, type, payment_method_id, category_id } = values;
         var dt_duedate_formated = dt_duedate.toISOString().split('T')[0];
 
-        
+
         amount = valueDb(amount);
 
         if (props.invoiceId) {
@@ -141,7 +163,7 @@ export const ModalInvoice = (props) => {
     }
 
 
-
+   
     return (
         <>
             <Modal show={props.show} onHide={props.handleClose} animation={false}>
@@ -153,7 +175,7 @@ export const ModalInvoice = (props) => {
                     <Container>
                         <Alert show={msgSuccess} variant="success">Salvo com sucesso</Alert>
                         <Form onSubmit={handleSubmit}>
-
+                        
                             <Row>
                                 <Col>
                                     <Form.Group controlId="Amount">
@@ -172,23 +194,30 @@ export const ModalInvoice = (props) => {
                                 <Col>
                                     <Form.Group controlId="account_id">
                                         <Form.Label>Conta</Form.Label>
-                                        <Form.Control as="select" name="account_id" required onChange={handleInputChange} value={values.account_id} >
-                                            <option value=''></option>
-                                            {props.accounts.map(account => (
-                                                <option key={account.id} value={account.id}>{account.name}</option>
-                                            ))}
-                                        </Form.Control>
+
+                                        <Select    
+                                        getOptionLabel ={(option)=>option.id +' - '+ option.name}
+                                        getOptionValue ={(option)=>option.id} 
+                                        options={props.accounts} 
+                                        name="account_id" 
+                                        required onChange={handleSelectChange} 
+                                        value={props.accounts.filter(option => option.id === values.account_id)} />
+
                                     </Form.Group>
                                 </Col>
                                 <Col>
                                     <Form.Group controlId="account_id">
                                         <Form.Label>Cliente / Fornecedor</Form.Label>
-                                        <Form.Control as="select" name="company_id" required onChange={handleInputChange} value={values.company_id} >
-                                            <option value=''></option>
-                                            {props.companies.map(company => (
-                                                <option key={company.id} value={company.id}>{company.name}</option>
-                                            ))}
-                                        </Form.Control>
+
+                                        <Select    
+                                        getOptionLabel ={(option)=>option.id +' - '+ option.name}
+                                        getOptionValue ={(option)=>option.id} 
+                                        options={props.companies} 
+                                        name="company_id" 
+                                        required onChange={handleSelectChange} 
+                                        value={props.companies.filter(option => option.id === values.company_id)} />
+
+         
                                     </Form.Group>
                                 </Col>
                             </Row>
@@ -197,33 +226,36 @@ export const ModalInvoice = (props) => {
                                 <Col>
                                     <Form.Group controlId="category_id">
                                         <Form.Label>Categoria</Form.Label>
-                                        <Form.Control as="select" name="category_id" required onChange={handleInputChange} value={values.category_id} >
-                                            <option value=''></option>
-
-                                            {props.categories.map(category => {
-                                                if (category.type === values.type) {
-                                                    if (category.id === values.category_id){
-                                                        return <option key={category.id} selected value={category.id}>{category.name}</option>;
-                                                    }
-                                                    return <option key={category.id} value={category.id}>{category.name}</option>;
-                                                    
-                                                }
-                                                return null;
+                                    
+                                            <Select    
+                                        getOptionLabel ={(option)=>option.id +' - '+ option.name}
+                                        getOptionValue ={(option)=>option.id} 
+                                        options={props.categories.filter(category => {
+                                            if (category.type === values.type) {
+                                                return category;
+                                            }
+                                            return null;
                                                 
-                                            })}
+                                        })}
+                                        name="category_id" 
+                                        required onChange={handleSelectChange} 
+                                        value={props.categories.filter(option => option.id === values.category_id)} />
 
-                                        </Form.Control>
+                                    
                                     </Form.Group>
                                 </Col>
                                 <Col>
                                     <Form.Group controlId="payment_method_id">
                                         <Form.Label>Forma de Pagamento</Form.Label>
-                                        <Form.Control as="select" name="payment_method_id" required onChange={handleInputChange} value={values.payment_method_id} >
-                                            <option value=''></option>
-                                            {props.payment_methods.map(payment_method => (
-                                                <option key={payment_method.id} value={payment_method.id}>{payment_method.name}</option>
-                                            ))}
-                                        </Form.Control>
+
+                                        <Select    
+                                        getOptionLabel ={(option)=>option.id +' - '+ option.name}
+                                        getOptionValue ={(option)=>option.id} 
+                                        options={props.payment_methods} 
+                                        name="payment_method_id" 
+                                        required onChange={handleSelectChange} 
+                                        value={props.payment_methods.filter(option => option.id === values.payment_method_id)} />
+
                                     </Form.Group>
                                 </Col>
                             </Row>
@@ -241,9 +273,9 @@ export const ModalInvoice = (props) => {
                                 <Col xs={8}>
                                     <Form.Group controlId="status">
                                         <Form.Label>Status: </Form.Label><br />
-                                        <Form.Check inline label="Em Aberto" type='radio' name='status' id='status_radio1' value='1' onChange={handleInputChange} checked={values.status === "1"} required />
-                                        <Form.Check inline label="Paga" type='radio' name='status' id='status_radio2' value='2' onChange={handleInputChange} checked={values.status === "2"} required />
-                                        <Form.Check inline label="Cancelada" type='radio' name='status' id='status_radio3' value='3' onChange={handleInputChange} checked={values.status === "3"} required />
+                                        <Form.Check inline disabled={props.invoiceId && user.admin === "0" ? true : false} label="Em Aberto" type='radio' name='status' id='status_radio1' value='1' onChange={handleInputChange} checked={values.status === "1"} required />
+                                        <Form.Check inline disabled={props.invoiceId && user.admin === "0" ? true : false} label="Paga" type='radio' name='status' id='status_radio2' value='2' onChange={handleInputChange} checked={values.status === "2"} required />
+                                        <Form.Check inline disabled={props.invoiceId && user.admin === "0" ? true : false} label="Cancelada" type='radio' name='status' id='status_radio3' value='3' onChange={handleInputChange} checked={values.status === "3"} required />
 
                                     </Form.Group>
                                 </Col>

@@ -41,9 +41,9 @@ export default function Accounts() {
                                         <tr>
                                             <th></th>
                                             <th>#</th>
-                                            <th>Date Created</th>
-                                            <th>Name</th>
-                                            <th>Balance</th>
+                                            <th>Data de Criação</th>
+                                            <th>Nome</th>
+                                            <th>Saldo Inicial</th>
                                         </tr>
                                     </thead>
                                     <tbody>

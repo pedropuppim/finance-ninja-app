@@ -36,7 +36,7 @@ const AdminRoute = ({ component: Component, ...rest }) => (
   <Route
     {...rest}
     render={props =>
-      user.admin === '1' ? (
+      user && user.admin === '1' ? (
         <Component {...props} />
       ) : (
           <Redirect to={{ pathname: "/login", state: { from: props.location } }} />

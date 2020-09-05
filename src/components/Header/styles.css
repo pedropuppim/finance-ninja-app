@@ -76,7 +76,7 @@ img {
 .menu {
     padding-right: 0.7rem;
     padding-left: 0.7rem;  
-    color: rgba(255,255,255,.5);
+    color: rgba(255,255,255,.75);
     text-decoration: none;
 }
 
@@ -95,7 +95,7 @@ img {
 }
 
 .menu:hover {
-    color: rgba(255,255,255,.75);
+    color: white;
     text-decoration: none;
 }
 

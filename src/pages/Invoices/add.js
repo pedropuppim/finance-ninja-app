@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Form, Modal, Button, Alert, Container, Row, Col } from 'react-bootstrap';
 import api from "./../../services/api";
 import './styles.css';
@@ -9,10 +9,6 @@ import valueDb from '../../utils/money';
 import { getUser }  from "./../../services/auth"
 import Select from 'react-select'
 import "react-datepicker/dist/react-datepicker.css";
-
-
-
-const user = getUser();
 
 
 export const EditInvoice = (props) => {
@@ -39,8 +35,12 @@ export const ModalInvoice = (props) => {
     const [values, setValues] = useState({ amount: '', dt_duedate: '', account_id: '', company_id: '', payment_method_id: '', category_id: '' , description: '', status: "1", type: "1" });
     const [dt_duedate, setStartDate] = useState(new Date());
     const [msgSuccess, setSuccess] = useState(false);
+    const [user, setUser] = useState('');
 
 
+    useEffect(() => {
+        setUser(getUser());
+    }, []);
 
     const loadItem = async () => {
         const invoice = await api.get('/invoices/' + props.invoiceId);
@@ -67,10 +67,6 @@ export const ModalInvoice = (props) => {
     const handleInputChange = (e, p, c) => {
 
         try {
-
-
-            console.log(e.target);
-
             const { name, value } = e.target ? e.target : c.target;
             setValues({ ...values, [name]: value });
         } catch (error) {

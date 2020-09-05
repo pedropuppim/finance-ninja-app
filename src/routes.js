@@ -12,10 +12,11 @@ import Categories from './pages/Categories';
 import PaymentMethods from './pages/PaymentMethods';
 import Users from './pages/Users';
 import Dashboard from './pages/Dashboard';
+import NewUser from './pages/Login/new';
 
 
 import {getUser} from './services/auth'
-
+import Excel from './pages/Invoices/excel';
 
 const user = getUser();
 
@@ -59,6 +60,8 @@ const Routes = () => (
       <AdminRoute path="/categories" component={Categories} />
       <AdminRoute path="/payment_methods" component={PaymentMethods} />
       <Route path="/login" component={Login} />
+      <Route path="/new_user" component={NewUser} />
+      <Route path="/excel" component={Excel} />
       <PrivateRoute exact path="/" component={Invoices} />
       <PrivateRoute exact path="/logoff" component={Logoff} />
     </Switch>

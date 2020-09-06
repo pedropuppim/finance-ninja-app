@@ -34,24 +34,11 @@ export default function Excel() {
             is_married: true
         }
     ];
-    
-    var dataSet2 = [
-        {
-            name: "Johnson",
-            total: 25,
-            remainig: 16
-        },
-        {
-            name: "Josef",
-            total: 25,
-            remainig: 7
-        }
-    ];
-
+   
 
     return (
         <div>
-          
+            <ExcelFile>
                 <ExcelSheet data={dataSet1} name="Employees">
                     <ExcelColumn label="Name" value="name"/>
                     <ExcelColumn label="Wallet Money" value="amount"/>
@@ -59,12 +46,7 @@ export default function Excel() {
                     <ExcelColumn label="Marital Status"
                                  value={(col) => col.is_married ? "Married" : "Single"}/>
                 </ExcelSheet>
-                <ExcelSheet data={dataSet2} name="Leaves">
-                    <ExcelColumn label="Name" value="name"/>
-                    <ExcelColumn label="Total Leaves" value="total"/>
-                    <ExcelColumn label="Remaining Leaves" value="remaining"/>
-                </ExcelSheet>
- 
+            </ExcelFile>
         </div>
     )
 }

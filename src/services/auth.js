@@ -8,6 +8,11 @@ export const isAuthenticated = () => {
   return ls?.token ? true : false;
 }
 
+export const isAuthenticatedAndAdmin = () => {
+  const ls = JSON.parse(localStorage.getItem(TOKEN_KEY));
+  return ls?.user?.admin ? true : false;
+}
+
 export const getToken = () => {
   const ls = JSON.parse(localStorage.getItem(TOKEN_KEY));
   return ls?.token;

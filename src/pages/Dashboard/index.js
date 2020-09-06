@@ -1,12 +1,159 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import Header from "../../components/Header";
-import './styles.css';
+import api from "./../../services/api";
 import { Chart } from "react-google-charts";
-import { Row, Col } from 'react-bootstrap';
+import { Row, Col, Spinner } from 'react-bootstrap';
+import './styles.css';
 
 export default function Dashboard() {
 
+    const [box_month, setBoxMonth] = useState([['','',''],[0,0,0]]);
+    const [pay_month_by_category, setPayMonthByCategory] = useState([['Categorias', 'Valor'],['',0]]);
+    const [pay_month_by_companies, setPayMonthByCompanies] = useState([['','',''],[0,0,0]]);
+    const [receive_month_by_companies, setReceiveMonthByCompanies] = useState([['','',''],[0,0,0]]);
+    const [flow_month, setFlowMonth] = useState([['','',''],[0,0,0]]);
+
+    useEffect(() => {
         
+        loadBoxMonth();
+        loadPayMonthByCategory();
+        loadPayMonthByCompany();
+        loadReceiveMonthByCompany();
+        loadFlowMonth();
+        
+        // eslint-disable-next-line
+        }, []);
+
+    async function loadFlowMonth() {
+
+        try {
+        
+            const response = await api.get("/dashboard/flow_month");
+
+            var rel_data = [['Dia', 'A Pagar', 'A receber', 'Saldo']];
+
+            function getData(element) {
+                var balance = element.receive - element.pay;
+                rel_data.push([element.day, element.pay, element.receive, balance])
+            }
+
+            response.data.forEach(getData);
+
+            setFlowMonth(rel_data);
+
+
+        } catch (error) {
+            console.log(error);
+        }
+
+    }
+
+
+    async function loadReceiveMonthByCompany() {
+
+        try {
+        
+            const response = await api.get("/dashboard/receive_month_by_companies");
+
+            var rel_data = [['Cliente', 'Valor', { role: 'style' }]];
+
+            function getData(element) {
+                rel_data.push([element.company_name, element.value, 'green'])
+            }
+
+            response.data.forEach(getData);
+
+            setPayMonthByCompanies(rel_data);
+
+        } catch (error) {
+            console.log(error);
+        }
+
+    }
+
+    async function loadPayMonthByCompany() {
+
+    
+        try {
+      
+            const response = await api.get("/dashboard/pay_month_by_companies");
+
+            var rel_data = [['Fornecedor', 'Valor', { role: 'style' }]];
+
+            function getData(element) {
+                rel_data.push([element.company_name, element.value, 'red'])
+            }
+
+            response.data.forEach(getData);
+            setReceiveMonthByCompanies(rel_data);
+
+
+        } catch (error) {
+            console.log(error);
+        }
+
+    }
+
+    async function loadPayMonthByCategory() {
+
+        
+        try {
+
+            const response = await api.get("/dashboard/pay_month_by_category");
+
+            var rel_data = [['Categorias', 'Valor']];
+            function getData(element) {
+               rel_data.push([element.category_name, element.value])
+            }
+
+            response.data.forEach(getData);
+            setPayMonthByCategory(rel_data);
+
+        } catch (error) {
+            console.log(error);
+        }
+
+    }
+    async function loadBoxMonth() {
+
+      
+        try {
+
+            var pay, receive, balance = 0;
+            const response = await api.get("/dashboard/box_month");
+
+            function getData(element) {
+
+                if (element.type && element.type==="1"){
+                    pay = element.value;
+                }
+
+                if (element.type && element.type==="2"){
+                    receive = element.value;
+                }
+
+            }
+
+            response.data.forEach(getData);
+
+            balance = receive - pay;
+
+
+            setBoxMonth([
+                ['Tipo', 'Valor',{ role: 'style' }],
+                ['Pagar', pay, 'red'],
+                ['Receber', receive, 'blue'],
+                ['Saldo', balance, 'green'],
+            ]);
+
+
+        } catch (error) {
+            console.log(error);
+        }
+
+    }
+
+
         return (
 
             <div>
@@ -17,19 +164,15 @@ export default function Dashboard() {
 
                 <Row>
                     <Col>
+
+       
                         <Chart
                             width={400}
                             height={300}
                             colors= {['#e0440e', '#e6693e', '#ec8f6e']}
                             chartType="ColumnChart"
-                            loader={<div>Carregando</div>}
-                            data={[
-                            ['Tipo', 'Valor',{ role: 'style' }],
-                            ['Pagar', 2792000, 'red'],
-                            ['Receber', 3792000, 'blue'],
-                            ['Saldo', 1792000, 'green'],
-
-                            ]}
+                            loader={<Spinner animation="grow" className='spinner' />}
+                            data={box_month}
                             options={{
                             title: 'Caixa do mês',
                             chartArea: { width: '100%' },
@@ -37,21 +180,15 @@ export default function Dashboard() {
                             }}
                             legendToggle
                         />
-
+          
                         </Col>
                         <Col>
                         <Chart
                             width={400}
                             height={300}
                             chartType="PieChart"
-                            loader={<div>Carregando</div>}
-                            data={[
-                                ['Categorias', 'Valor'],
-                                ['Aluguel', 9],
-                                ['Educação', 2],
-                                ['Lazer', 2],
-                                ['Reserva', 7],
-                            ]}
+                            loader={<Spinner animation="grow" className='spinner' />}
+                            data={pay_month_by_category}
                             options={{
                                 title: 'Despesas por Categoria no mês',
                                 chartArea: { width: '100%' },
@@ -67,45 +204,11 @@ export default function Dashboard() {
                         width={'900px'}
                         height={'300px'}
                         chartType="LineChart"
-                        loader={<div>Carregando</div>}
-                        data={[
-                            ['x', 'A Pagar', 'A receber'],
-                            [0, 0, 1],
-                            [1, 10, 3],
-                            [2, 20, 6],
-                            [3, 2, 7],
-                            [4, 30, 3],
-                            [5, 10, 4],
-                            [6, 2, 1],
-                            [7, 23, 4],
-                            [8, 23, 4],
-                            [9, 23, 4],
-                            [10, 33, 10],
-                            [11, 23, 4],
-                            [12, 23, 4],
-                            [13, 23, 4],
-                            [14, 23, 4],
-                            [15, 13, 1],
-                            [16, 23, 4],
-                            [17, 123, 114],
-                            [18, 23, 54],
-                            [19, 23, 4],
-                            [20, 23, 4],
-                            [21, 23, 34],
-                            [22, 23, 4],
-                            [23, 23, 4],
-                            [24, 23, 24],
-                            [25, 23, 4],
-                            [26, 23, 4],
-                            [27, 213, 14],
-                            [28, 23, 4],
-                            [29, 63, 14],
-                            [30, 23, 4],
-                        ]}
+                        loader={<Spinner animation="grow" className='spinner' />}
+                        data={flow_month}
                         options={{
                             title: 'Fluxo do mês',
                         }}
-                        rootProps={{ 'data-testid': '1' }}
                         />
                 </Row>
 
@@ -115,28 +218,16 @@ export default function Dashboard() {
                             width={'400px'}
                             height={'300px'}
                             chartType="BarChart"
-                            loader={<div>Carregando</div>}
-                            data={[
-                                ['City', '2010 Population', { role: 'style' }],
-                                ['New York City, NY', 8175000, 'red'],
-                                ['Los Angeles, CA', 3792000, 'red'],
-                                ['Chicago, IL', 2695000, 'red'],
-                                ['Houston, TX', 2099000, 'red'],
-                                ['Philadelphia, PA', 1526000, 'red'],
-                            ]}
+                            loader={<Spinner animation="grow" className='spinner' />}
+                            data={receive_month_by_companies}
                             options={{
-                                title: 'Saìdas por Fornecedores',
+                                title: 'A pagar por Fornecedores',
                                 chartArea: { width: '100%' },
-                                hAxis: {
-                                title: 'Total Population',
-                                minValue: 0,
-                                },
                                 vAxis: {
-                                title: 'City',
+                                    title: 'Fornecedores',
                                 },
                             }}
-                            // For tests
-                            rootProps={{ 'data-testid': '1' }}
+                       
                             />
                     </Col>
                 <Col>
@@ -145,28 +236,16 @@ export default function Dashboard() {
                             width={'400px'}
                             height={'300px'}
                             chartType="BarChart"
-                            loader={<div>Carregando</div>}
-                            data={[
-                                ['City', '2010 Population', { role: 'style' }],
-                                ['New York City, NY', 8175000, 'blue'],
-                                ['Los Angeles, CA', 3792000, 'blue'],
-                                ['Chicago, IL', 2695000, 'blue'],
-                                ['Houston, TX', 2099000, 'blue'],
-                                ['Philadelphia, PA', 1526000, 'blue'],
-                            ]}
+                            loader={<Spinner animation="grow" className='spinner' />}
+                            data={pay_month_by_companies}
                             options={{
                                 title: 'Entradas por Cliente',
                                 chartArea: { width: '100%' },
-                                hAxis: {
-                                title: 'Total Population',
-                                minValue: 0,
-                                },
                                 vAxis: {
-                                title: 'City',
+                                    title: 'Clientes',
                                 },
                             }}
-                            // For tests
-                            rootProps={{ 'data-testid': '1' }}
+                         
                             />
                 </Col>
                 </Row>

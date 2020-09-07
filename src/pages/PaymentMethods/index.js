@@ -2,9 +2,10 @@ import React, { useState, useEffect  } from 'react';
 import api from "../../services/api";
 import Header from "../../components/Header";
 import './styles.css';
-import { Table, Spinner } from 'react-bootstrap';
+import { Table, Spinner, Col, Row } from 'react-bootstrap';
 
 import AddPaymentMethod, { EditPaymentMethod } from "./add";
+import icon_xls from './../../assets/images/icon_xls.png';
 
 const moment = require("moment");
 
@@ -40,7 +41,12 @@ export default function PaymentMethods() {
                     ) : (
 
                             <div>
-                                <p><AddPaymentMethod loader={loadpaymentMethods} /></p>
+                                <p>
+                                    <Row>
+                                        <Col><AddPaymentMethod loader={loadpaymentMethods} /></Col>
+                                        <Col xs={1} className="m-top15"><img src={icon_xls}  alt="Exportar" /></Col>
+                                    </Row>
+                                </p>
 
                                 <Table striped bordered hover responsive variant="striped bordered hover">
                                     <thead>

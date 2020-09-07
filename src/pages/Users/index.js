@@ -2,9 +2,11 @@ import React, { useState, useEffect } from 'react';
 import api from "./../../services/api";
 import Header from "./../../components/Header";
 import './styles.css';
-import { Table, Spinner, Badge } from 'react-bootstrap';
+import { Table, Spinner, Badge, Col, Row } from 'react-bootstrap';
 
 import AddUser, { EditUser } from "./add";
+
+import icon_xls from './../../assets/images/icon_xls.png';
 
 const moment = require("moment");
 
@@ -39,8 +41,13 @@ export default function Users() {
                 ) : (
 
                         <div>
-                            <p><AddUser loader={loadUsers} /></p>
-
+                            <p>
+                                <Row>
+                                    <Col><AddUser loader={loadUsers} /></Col>
+                                    <Col xs={1}><img src={icon_xls}  alt="Exportar" /></Col>
+                                </Row>
+                            </p>
+                           
                             <Table striped bordered hover responsive variant="striped bordered hover">
                                 <thead>
                                     <tr>

@@ -2,7 +2,8 @@ import React, { useState, useEffect  } from 'react';
 import api from "./../../services/api";
 import Header from "./../../components/Header";
 import './styles.css';
-import { Table, Spinner } from 'react-bootstrap';
+import icon_xls from './../../assets/images/icon_xls.png';
+import { Table, Spinner, Col, Row } from 'react-bootstrap';
 
 import AddCategory, { EditCategory } from "./add";
 
@@ -21,6 +22,18 @@ export default function Categories() {
     }, []);
 
 
+    async function generateXlsx() {
+
+        try {
+            const response = await api.get("/categories?xlsx=true");
+            window.location.href = response.data.file;
+        } catch (error) {
+            console.log(error);
+        }
+
+    }
+
+
     async function loadCategories() {
         const response = await api.get("/categories");
         setCategories(response.data);
@@ -37,7 +50,14 @@ export default function Categories() {
                     ) : (
 
                             <div>
-                                <p><AddCategory loader={loadCategories} /></p>
+                               
+                                <Row>
+                                    <Col><AddCategory loader={loadCategories} /></Col>
+                                    <Col xs={1} className="m-top15"><img src={icon_xls} className="pointer" onClick={()=>generateXlsx()} alt="Exportar" /></Col>
+                                </Row>
+                               
+                                <p></p>
+
 
                                 <Table striped bordered hover responsive variant="striped bordered hover">
                                     <thead>

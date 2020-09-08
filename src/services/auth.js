@@ -1,5 +1,5 @@
+import decode from 'jwt-decode';
 export const TOKEN_KEY = "@finance-ninja";
-
 //export const isAuthenticated = () => localStorage.getItem(TOKEN_KEY) !== null;
 
 
@@ -10,7 +10,19 @@ export const isAuthenticated = () => {
 
 export const isAuthenticatedAndAdmin = () => {
   const ls = JSON.parse(localStorage.getItem(TOKEN_KEY));
-  return ls?.user?.admin ? true : false;
+
+  var admin = false;
+  if (ls?.token){
+
+    var payload = decode(ls.token);
+    console.log(payload);
+
+    if (payload.user.admin==="1"){
+      admin = true;
+    }
+  }
+
+  return admin;
 }
 
 export const getToken = () => {

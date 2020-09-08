@@ -2,10 +2,10 @@ import React, {useState} from 'react'
 import { Navbar,  Form, Button, Row, Col } from 'react-bootstrap';
 import DatePicker from "react-datepicker";
 
-
 import './styles.css';
 import "react-datepicker/dist/react-datepicker.css";
 const moment = require("moment");
+
 
 export default function Filters(props) {
 
@@ -103,11 +103,7 @@ export default function Filters(props) {
                     </Button>
                 </Col>
 
-                <Col xs={2}>
-                    <Button variant="dark" className="m-top" >
-                        Pdf
-                    </Button>
-                </Col>
+  
             </Row>
         </Form>
 

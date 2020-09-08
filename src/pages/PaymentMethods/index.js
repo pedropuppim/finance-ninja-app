@@ -23,11 +23,25 @@ export default function PaymentMethods() {
         
     }, []);
 
+    async function generateXlsx() {
+
+        try {
+            const response = await api.get("/payment_methods?xlsx=true");
+            window.location.href = response.data.file;
+        } catch (error) {
+            console.log(error);
+        }
+
+    }
 
     async function loadpaymentMethods() {
-        const response = await api.get("/payment_methods");
-        setPaymentMethods(response.data);
-        setLoading(false);
+        try {
+            const response = await api.get("/payment_methods");
+            setPaymentMethods(response.data);
+            setLoading(false);
+        } catch (error) {
+            console.log(error)
+        }
     }
 
     
@@ -41,13 +55,13 @@ export default function PaymentMethods() {
                     ) : (
 
                             <div>
-                                <p>
+                            
                                     <Row>
                                         <Col><AddPaymentMethod loader={loadpaymentMethods} /></Col>
-                                        <Col xs={1} className="m-top15"><img src={icon_xls}  alt="Exportar" /></Col>
+                                        <Col xs={1} className="m-top15"><img src={icon_xls} className="pointer" onClick={()=>generateXlsx()} alt="Exportar" /></Col>
                                     </Row>
-                                </p>
-
+                               
+                                <p></p>
                                 <Table striped bordered hover responsive variant="striped bordered hover">
                                     <thead>
                                         <tr>

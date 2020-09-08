@@ -2,7 +2,8 @@ import React, { useState, useEffect  } from 'react';
 import api from "./../../services/api";
 import Header from "./../../components/Header";
 import './styles.css';
-import { Table, Spinner } from 'react-bootstrap';
+import icon_xls from './../../assets/images/icon_xls.png';
+import { Table, Spinner, Col, Row } from 'react-bootstrap';
 import AddAccount, { EditAccount } from "./add";
 
 const moment = require("moment");
@@ -19,11 +20,27 @@ export default function Accounts() {
         
      }, []);
 
+     async function generateXlsx() {
+
+        try {
+            const response = await api.get("/accounts?xlsx=true");
+            window.location.href = response.data.file;
+        } catch (error) {
+            console.log(error);
+        }
+
+    }
+
     async function loadAccounts() {
 
-        const response = await api.get("/accounts");
-        setAccounts(response.data);
-        setLoading(false);
+        try {
+            const response = await api.get("/accounts");
+            setAccounts(response.data);
+            setLoading(false);
+        } catch (error) {
+            console.log(error);
+        }
+
     }
 
         return (
@@ -35,7 +52,14 @@ export default function Accounts() {
                         <Spinner animation="grow" className='spinner' />
                     ) : (
                             <div>
-                                <p><AddAccount loader={loadAccounts} /></p>
+
+                                <Row>
+                                    <Col><AddAccount loader={loadAccounts} /></Col>
+                                    <Col xs={1} className="m-top15"><img src={icon_xls} className="pointer" onClick={()=>generateXlsx()} alt="Exportar" /></Col>
+                                </Row>
+                                    
+                                    <p></p>
+
                                 <Table striped bordered hover responsive variant="striped bordered hover">
                                     <thead>
                                         <tr>

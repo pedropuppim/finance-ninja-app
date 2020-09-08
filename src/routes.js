@@ -15,7 +15,6 @@ import Dashboard from './pages/Dashboard';
 import NewUser from './pages/Login/new';
 
 
-
 const PrivateRoute = ({ component: Component, ...rest }) => (
   <Route
     {...rest}

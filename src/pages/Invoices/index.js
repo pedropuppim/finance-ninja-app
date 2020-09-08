@@ -2,7 +2,9 @@ import React, { useState, useEffect } from 'react';
 import api from "../../services/api";
 import Header from "../../components/Header";
 import './styles.css';
-import { Table, Badge, Spinner, Button } from 'react-bootstrap';
+import { Table, Badge, Spinner, Button, Col, Row } from 'react-bootstrap';
+import icon_xls from './../../assets/images/icon_xls.png';
+
 
 import AddInvoice, { EditInvoice } from "./add";
 import Filters from "./filters";
@@ -37,78 +39,122 @@ export default function Invoices() {
     }, []);
 
     async function loadCompanies() {
-        const response = await api.get("/companies");
-        setCompanies(response.data);
 
-        
-        setLoading(false);
+        try {
+            const response = await api.get("/companies");
+            setCompanies(response.data);
+    
+            
+            setLoading(false);
+        } catch (error) {
+            console.log(error);
+        }
+
     }
 
     async function loadAccounts() {
 
-        const response = await api.get("/accounts");
-        setAccounts(response.data);
-        setLoading(false);
+        try {
+            const response = await api.get("/accounts");
+            setAccounts(response.data);
+            setLoading(false);
+        } catch (error) {
+            console.log(error);
+        }
+
     }
     
     async function loadCategories() {
-        const response = await api.get("/categories");
-        setCategories(response.data);
-        setLoading(false);
+        try {
+            const response = await api.get("/categories");
+            setCategories(response.data);
+            setLoading(false);
+        } catch (error) {
+            console.log(error);
+        }
+
     }
 
+    async function generateXlsx() {
+
+        try {
+            const response = await api.get("/invoices?xlsx=true"+filters);
+            window.location.href = response.data.file;
+        } catch (error) {
+            console.log(error);
+        }
+
+    }
+
+
     async function loadpaymentMethods() {
-        const response = await api.get("/payment_methods");
-        setPaymentMethods(response.data);
-        setLoading(false);
+
+        try {
+            const response = await api.get("/payment_methods");
+            setPaymentMethods(response.data);
+            setLoading(false);
+        } catch (error) {
+            console.log(error);
+        }
+
     }
 
 
     const loadInvoices = async (resetPage = null, string_filters = null) => {
 
-        if (string_filters){
-            setLoadingTable(true);
-            setFilters(string_filters);
-        } else {
-            string_filters = filters;
+        try {
+            if (string_filters){
+                setLoadingTable(true);
+                setFilters(string_filters);
+            } else {
+                string_filters = filters;
+            }
+    
+            var currentPage = (resetPage) ? 1 : pages.currentPage || 1;
+            const response = await api.get("/invoices?page=" + currentPage + string_filters)
+            setInvoices(response.data.data);
+    
+            setLastPage(response.data.pagination.lastPage);
+            setPage(currentPage);
+    
+            setPages(response.data.pagination);
+            setLoading(false);
+            setLoadingTable(false);
+        } catch (error) {
+            console.log(error);
         }
 
-        var currentPage = (resetPage) ? 1 : pages.currentPage || 1;
-        const response = await api.get("/invoices?page=" + currentPage + string_filters)
-        setInvoices(response.data.data);
-
-        setLastPage(response.data.pagination.lastPage);
-        setPage(currentPage);
-
-        setPages(response.data.pagination);
-        setLoading(false);
-        setLoadingTable(false);
     }
 
     const paginate = async (ptype) => {
 
-        if (ptype === "previous") {
-            if (pages.currentPage > 1) {
-                setLoadingTable(true);
-                pages.currentPage = parseInt(pages.currentPage) - 1;
-            } else {
-                return;
+        try {
+            if (ptype === "previous") {
+                if (pages.currentPage > 1) {
+                    setLoadingTable(true);
+                    pages.currentPage = parseInt(pages.currentPage) - 1;
+                } else {
+                    return;
+                }
             }
+    
+            if (ptype === "next") {
+                if (pages.currentPage < pages.lastPage) {
+                    setLoadingTable(true);
+                    pages.currentPage = parseInt(pages.currentPage) + 1;
+                } else {
+                    return;
+                }
+            }
+    
+            setPages(pages);
+            setPage(pages.currentPage);
+            setLastPage(pages.lastPage);
+            loadInvoices();
+        } catch (error) {
+            console.log(error);
         }
 
-        if (ptype === "next") {
-            if (pages.currentPage < pages.lastPage) {
-                setLoadingTable(true);
-                pages.currentPage = parseInt(pages.currentPage) + 1;
-            } else {
-                return;
-            }
-        }
-
-        setPages(pages);
-        setPage(pages.currentPage);
-        setLastPage(pages.lastPage);
-        loadInvoices();
 
     }
 
@@ -133,9 +179,13 @@ export default function Invoices() {
                     ) : (
 
                             <div>
-                                <p>
-                                    <AddInvoice loader={loadInvoices} companies={companies} accounts={accounts} categories={categories} payment_methods={payment_methods} />
-                                </p>
+
+                                <Row>
+                                    <Col><AddInvoice loader={loadInvoices} companies={companies} accounts={accounts} categories={categories} payment_methods={payment_methods} /></Col>
+                                    <Col xs={1} className="m-top15"><img src={icon_xls} className="pointer" onClick={()=>generateXlsx()} alt="Exportar" /></Col>
+                                </Row>
+                               
+                                <p></p>
 
                                 <Table striped bordered hover responsive variant="striped bordered hover">
                                     <thead>

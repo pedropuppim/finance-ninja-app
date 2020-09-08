@@ -23,11 +23,26 @@ export default function Users() {
         
         }, []);
 
+    async function generateXlsx() {
 
-    const loadUsers = async () => {
-        const response = await api.get("/users");
-        setUsers(response.data);
-        setLoading(false);
+        try {
+            const response = await api.get("/users?xlsx=true");
+            window.location.href = response.data.file;
+        } catch (error) {
+            console.log(error);
+        }
+
+    }
+
+    async function loadUsers() {
+        try {
+            const response = await api.get("/users");
+            setUsers(response.data);
+            setLoading(false);
+        } catch (error) {
+            console.log(error);
+        }
+
     }
 
  
@@ -41,13 +56,14 @@ export default function Users() {
                 ) : (
 
                         <div>
-                            <p>
-                                <Row>
-                                    <Col><AddUser loader={loadUsers} /></Col>
-                                    <Col xs={1}><img src={icon_xls}  alt="Exportar" /></Col>
-                                </Row>
-                            </p>
-                           
+
+                            <Row>
+                                <Col><AddUser loader={loadUsers} /></Col>
+                                <Col xs={1} className="m-top15"><img src={icon_xls} className="pointer" onClick={()=>generateXlsx()} alt="Exportar" /></Col>
+                           </Row>
+                               
+                            <p></p>
+
                             <Table striped bordered hover responsive variant="striped bordered hover">
                                 <thead>
                                     <tr>
